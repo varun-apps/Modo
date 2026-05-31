@@ -1,0 +1,424 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 56;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		257671B92FCB8C4B00581CBD /* AIProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 257671B82FCB8C4B00581CBD /* AIProvider.swift */; };
+		257671BB2FCB8C4C00581CBD /* AIProviderService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 257671BA2FCB8C4C00581CBD /* AIProviderService.swift */; };
+		257671BD2FCB8C4D00581CBD /* OpenAICompatibleService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 257671BC2FCB8C4D00581CBD /* OpenAICompatibleService.swift */; };
+		257671BF2FCB8C4D00581CBD /* AnthropicAPIService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 257671BE2FCB8C4D00581CBD /* AnthropicAPIService.swift */; };
+		257671C12FCB8C4E00581CBD /* GeminiAPIService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 257671C02FCB8C4E00581CBD /* GeminiAPIService.swift */; };
+		AA1111111111111111110001 /* ModoApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB2222222222222222220001 /* ModoApp.swift */; };
+		AA1111111111111111110002 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB2222222222222222220002 /* AppDelegate.swift */; };
+		AA1111111111111111110003 /* ImprovementMode.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB2222222222222222220003 /* ImprovementMode.swift */; };
+		AA1111111111111111110004 /* KeychainService.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB2222222222222222220004 /* KeychainService.swift */; };
+		AA1111111111111111110005 /* AccessibilityService.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB2222222222222222220005 /* AccessibilityService.swift */; };
+		AA1111111111111111110007 /* WindowViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB2222222222222222220007 /* WindowViewModel.swift */; };
+		AA1111111111111111110008 /* ModeSelectionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB2222222222222222220008 /* ModeSelectionView.swift */; };
+		AA1111111111111111110009 /* ResultView.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB2222222222222222220009 /* ResultView.swift */; };
+		AA111111111111111111000A /* FloatingPanelContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB222222222222222222000A /* FloatingPanelContentView.swift */; };
+		AA111111111111111111000B /* FloatingWindowController.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB222222222222222222000B /* FloatingWindowController.swift */; };
+		AA111111111111111111000C /* PreferencesView.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB222222222222222222000C /* PreferencesView.swift */; };
+		AA111111111111111111000D /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = BB222222222222222222000D /* Assets.xcassets */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXFileReference section */
+		257671B82FCB8C4B00581CBD /* AIProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AIProvider.swift; sourceTree = "<group>"; };
+		257671BA2FCB8C4C00581CBD /* AIProviderService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AIProviderService.swift; sourceTree = "<group>"; };
+		257671BC2FCB8C4D00581CBD /* OpenAICompatibleService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OpenAICompatibleService.swift; sourceTree = "<group>"; };
+		257671BE2FCB8C4D00581CBD /* AnthropicAPIService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AnthropicAPIService.swift; sourceTree = "<group>"; };
+		257671C02FCB8C4E00581CBD /* GeminiAPIService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GeminiAPIService.swift; sourceTree = "<group>"; };
+		BB2222222222222222220001 /* ModoApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ModoApp.swift; sourceTree = "<group>"; };
+		BB2222222222222222220002 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
+		BB2222222222222222220003 /* ImprovementMode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImprovementMode.swift; sourceTree = "<group>"; };
+		BB2222222222222222220004 /* KeychainService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeychainService.swift; sourceTree = "<group>"; };
+		BB2222222222222222220005 /* AccessibilityService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccessibilityService.swift; sourceTree = "<group>"; };
+		BB2222222222222222220007 /* WindowViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WindowViewModel.swift; sourceTree = "<group>"; };
+		BB2222222222222222220008 /* ModeSelectionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ModeSelectionView.swift; sourceTree = "<group>"; };
+		BB2222222222222222220009 /* ResultView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ResultView.swift; sourceTree = "<group>"; };
+		BB222222222222222222000A /* FloatingPanelContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FloatingPanelContentView.swift; sourceTree = "<group>"; };
+		BB222222222222222222000B /* FloatingWindowController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FloatingWindowController.swift; sourceTree = "<group>"; };
+		BB222222222222222222000C /* PreferencesView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PreferencesView.swift; sourceTree = "<group>"; };
+		BB222222222222222222000D /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		BB222222222222222222000E /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		BB222222222222222222000F /* Modo.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = Modo.entitlements; sourceTree = "<group>"; };
+		BB2222222222222222220010 /* Modo.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Modo.app; sourceTree = BUILT_PRODUCTS_DIR; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		DD4444444444444444440002 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		CC3333333333333333330001 = {
+			isa = PBXGroup;
+			children = (
+				CC3333333333333333330002 /* Modo */,
+				CC3333333333333333330007 /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		CC3333333333333333330002 /* Modo */ = {
+			isa = PBXGroup;
+			children = (
+				BB2222222222222222220001 /* ModoApp.swift */,
+				BB2222222222222222220002 /* AppDelegate.swift */,
+				CC3333333333333333330003 /* Models */,
+				CC3333333333333333330004 /* Services */,
+				CC3333333333333333330005 /* Views */,
+				CC3333333333333333330006 /* Utilities */,
+				BB222222222222222222000D /* Assets.xcassets */,
+				BB222222222222222222000E /* Info.plist */,
+				BB222222222222222222000F /* Modo.entitlements */,
+			);
+			path = Modo;
+			sourceTree = "<group>";
+		};
+		CC3333333333333333330003 /* Models */ = {
+			isa = PBXGroup;
+			children = (
+				BB2222222222222222220003 /* ImprovementMode.swift */,
+				257671B82FCB8C4B00581CBD /* AIProvider.swift */,
+			);
+			path = Models;
+			sourceTree = "<group>";
+		};
+		CC3333333333333333330004 /* Services */ = {
+			isa = PBXGroup;
+			children = (
+				BB2222222222222222220005 /* AccessibilityService.swift */,
+				257671BA2FCB8C4C00581CBD /* AIProviderService.swift */,
+				257671BC2FCB8C4D00581CBD /* OpenAICompatibleService.swift */,
+				257671BE2FCB8C4D00581CBD /* AnthropicAPIService.swift */,
+				257671C02FCB8C4E00581CBD /* GeminiAPIService.swift */,
+			);
+			path = Services;
+			sourceTree = "<group>";
+		};
+		CC3333333333333333330005 /* Views */ = {
+			isa = PBXGroup;
+			children = (
+				BB2222222222222222220007 /* WindowViewModel.swift */,
+				BB2222222222222222220008 /* ModeSelectionView.swift */,
+				BB2222222222222222220009 /* ResultView.swift */,
+				BB222222222222222222000A /* FloatingPanelContentView.swift */,
+				BB222222222222222222000B /* FloatingWindowController.swift */,
+				BB222222222222222222000C /* PreferencesView.swift */,
+			);
+			path = Views;
+			sourceTree = "<group>";
+		};
+		CC3333333333333333330006 /* Utilities */ = {
+			isa = PBXGroup;
+			children = (
+				BB2222222222222222220004 /* KeychainService.swift */,
+			);
+			path = Utilities;
+			sourceTree = "<group>";
+		};
+		CC3333333333333333330007 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				BB2222222222222222220010 /* Modo.app */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		EE5555555555555555550001 /* Modo */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = FF6666666666666666660002 /* Build configuration list for PBXNativeTarget "Modo" */;
+			buildPhases = (
+				DD4444444444444444440001 /* Sources */,
+				DD4444444444444444440002 /* Frameworks */,
+				DD4444444444444444440003 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = Modo;
+			productName = WriteBetter;
+			productReference = BB2222222222222222220010 /* Modo.app */;
+			productType = "com.apple.product-type.application";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		EE5555555555555555550002 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				BuildIndependentTargetsInParallel = 1;
+				LastSwiftUpdateCheck = 1500;
+				LastUpgradeCheck = 1500;
+				TargetAttributes = {
+					EE5555555555555555550001 = {
+						CreatedOnToolsVersion = 15.0;
+					};
+				};
+			};
+			buildConfigurationList = FF6666666666666666660001 /* Build configuration list for PBXProject "Modo" */;
+			compatibilityVersion = "Xcode 14.0";
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+				Base,
+			);
+			mainGroup = CC3333333333333333330001;
+			productRefGroup = CC3333333333333333330007 /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				EE5555555555555555550001 /* Modo */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		DD4444444444444444440003 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				AA111111111111111111000D /* Assets.xcassets in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		DD4444444444444444440001 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				257671C12FCB8C4E00581CBD /* GeminiAPIService.swift in Sources */,
+				AA1111111111111111110001 /* ModoApp.swift in Sources */,
+				AA1111111111111111110002 /* AppDelegate.swift in Sources */,
+				AA1111111111111111110003 /* ImprovementMode.swift in Sources */,
+				AA1111111111111111110004 /* KeychainService.swift in Sources */,
+				AA1111111111111111110005 /* AccessibilityService.swift in Sources */,
+				AA1111111111111111110007 /* WindowViewModel.swift in Sources */,
+				257671BF2FCB8C4D00581CBD /* AnthropicAPIService.swift in Sources */,
+				AA1111111111111111110008 /* ModeSelectionView.swift in Sources */,
+				257671B92FCB8C4B00581CBD /* AIProvider.swift in Sources */,
+				AA1111111111111111110009 /* ResultView.swift in Sources */,
+				AA111111111111111111000A /* FloatingPanelContentView.swift in Sources */,
+				257671BD2FCB8C4D00581CBD /* OpenAICompatibleService.swift in Sources */,
+				AA111111111111111111000B /* FloatingWindowController.swift in Sources */,
+				257671BB2FCB8C4C00581CBD /* AIProviderService.swift in Sources */,
+				AA111111111111111111000C /* PreferencesView.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin XCBuildConfiguration section */
+		FF6666666666666666660003 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu17;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
+				MACOSX_DEPLOYMENT_TARGET = 14.0;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = macosx;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "DEBUG $(inherited)";
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+			};
+			name = Debug;
+		};
+		FF6666666666666666660004 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu17;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
+				MACOSX_DEPLOYMENT_TARGET = 14.0;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				SDKROOT = macosx;
+				SWIFT_COMPILATION_MODE = wholemodule;
+			};
+			name = Release;
+		};
+		FF6666666666666666660005 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_ENTITLEMENTS = Modo/Modo.entitlements;
+				CODE_SIGN_STYLE = Automatic;
+				COMBINE_HIDPI_IMAGES = YES;
+				CURRENT_PROJECT_VERSION = 1;
+				ENABLE_HARDENED_RUNTIME = YES;
+				GENERATE_INFOPLIST_FILE = NO;
+				INFOPLIST_FILE = Modo/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = Modo;
+				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+				);
+				MACOSX_DEPLOYMENT_TARGET = 15.6;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.modo.Modo;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+			};
+			name = Debug;
+		};
+		FF6666666666666666660006 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_ENTITLEMENTS = Modo/Modo.entitlements;
+				CODE_SIGN_STYLE = Automatic;
+				COMBINE_HIDPI_IMAGES = YES;
+				CURRENT_PROJECT_VERSION = 1;
+				ENABLE_HARDENED_RUNTIME = YES;
+				GENERATE_INFOPLIST_FILE = NO;
+				INFOPLIST_FILE = Modo/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = Modo;
+				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+				);
+				MACOSX_DEPLOYMENT_TARGET = 15.6;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.modo.Modo;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		FF6666666666666666660001 /* Build configuration list for PBXProject "Modo" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				FF6666666666666666660003 /* Debug */,
+				FF6666666666666666660004 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		FF6666666666666666660002 /* Build configuration list for PBXNativeTarget "Modo" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				FF6666666666666666660005 /* Debug */,
+				FF6666666666666666660006 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = EE5555555555555555550002 /* Project object */;
+}
