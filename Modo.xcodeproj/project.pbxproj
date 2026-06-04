@@ -12,6 +12,28 @@
 		257671BD2FCB8C4D00581CBD /* OpenAICompatibleService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 257671BC2FCB8C4D00581CBD /* OpenAICompatibleService.swift */; };
 		257671BF2FCB8C4D00581CBD /* AnthropicAPIService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 257671BE2FCB8C4D00581CBD /* AnthropicAPIService.swift */; };
 		257671C12FCB8C4E00581CBD /* GeminiAPIService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 257671C02FCB8C4E00581CBD /* GeminiAPIService.swift */; };
+		25C21C4B2FD196080073F3FC /* StreamWatchdog.swift in Sources */ = {isa = PBXBuildFile; fileRef = 25C21C4A2FD196080073F3FC /* StreamWatchdog.swift */; };
+		25C21C4D2FD196FD0073F3FC /* LaunchAtLoginService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 25C21C4C2FD196FD0073F3FC /* LaunchAtLoginService.swift */; };
+		25C21C4F2FD197A50073F3FC /* SettingsExporter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 25C21C4E2FD197A50073F3FC /* SettingsExporter.swift */; };
+		25C21C512FD1A3890073F3FC /* HelpTopic.swift in Sources */ = {isa = PBXBuildFile; fileRef = 25C21C502FD1A3890073F3FC /* HelpTopic.swift */; };
+		25C21C532FD1A3E70073F3FC /* HelpView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 25C21C522FD1A3E70073F3FC /* HelpView.swift */; };
+		25C283492FD1D8DE00269A2E /* Sparkle in Frameworks */ = {isa = PBXBuildFile; productRef = 25C283482FD1D8DE00269A2E /* Sparkle */; };
+		25C2834B2FD1DD5000269A2E /* UpdaterService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 25C2834A2FD1DD5000269A2E /* UpdaterService.swift */; };
+		25F68FC62FD0D5DB0062C375 /* HotkeyService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 25F68FC52FD0D5DB0062C375 /* HotkeyService.swift */; };
+		25F68FC82FD0D5EF0062C375 /* HotkeyRecorderField.swift in Sources */ = {isa = PBXBuildFile; fileRef = 25F68FC72FD0D5EF0062C375 /* HotkeyRecorderField.swift */; };
+		25F68FCA2FD0D8B80062C375 /* Mode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 25F68FC92FD0D8B80062C375 /* Mode.swift */; };
+		25F68FCC2FD0D8BE0062C375 /* CustomModeStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 25F68FCB2FD0D8BE0062C375 /* CustomModeStore.swift */; };
+		25F68FCE2FD0D91B0062C375 /* CustomModesView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 25F68FCD2FD0D91B0062C375 /* CustomModesView.swift */; };
+		25F68FD02FD0D9CB0062C375 /* HistoryStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 25F68FCF2FD0D9CB0062C375 /* HistoryStore.swift */; };
+		25F68FD22FD0D9E20062C375 /* HistoryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 25F68FD12FD0D9E20062C375 /* HistoryView.swift */; };
+		25F68FD42FD0DC680062C375 /* ModeHotkeysView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 25F68FD32FD0DC680062C375 /* ModeHotkeysView.swift */; };
+		25F68FD62FD0DD170062C375 /* WordDiff.swift in Sources */ = {isa = PBXBuildFile; fileRef = 25F68FD52FD0DD170062C375 /* WordDiff.swift */; };
+		25F68FD82FD0DD5D0062C375 /* PersonalInstructions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 25F68FD72FD0DD5D0062C375 /* PersonalInstructions.swift */; };
+		25F68FDA2FD0DF760062C375 /* ModeOverridesStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 25F68FD92FD0DF760062C375 /* ModeOverridesStore.swift */; };
+		25F68FDC2FD0DFCB0062C375 /* ModeRoutingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 25F68FDB2FD0DFCB0062C375 /* ModeRoutingView.swift */; };
+		25F68FDE2FD0E0120062C375 /* GenerationSettings.swift in Sources */ = {isa = PBXBuildFile; fileRef = 25F68FDD2FD0E0120062C375 /* GenerationSettings.swift */; };
+		25F68FE02FD0E1380062C375 /* TokenEstimator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 25F68FDF2FD0E1380062C375 /* TokenEstimator.swift */; };
+		25F68FE22FD0E1790062C375 /* OnboardingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 25F68FE12FD0E1790062C375 /* OnboardingView.swift */; };
 		AA1111111111111111110001 /* ModoApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB2222222222222222220001 /* ModoApp.swift */; };
 		AA1111111111111111110002 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB2222222222222222220002 /* AppDelegate.swift */; };
 		AA1111111111111111110003 /* ImprovementMode.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB2222222222222222220003 /* ImprovementMode.swift */; };
@@ -32,6 +54,27 @@
 		257671BC2FCB8C4D00581CBD /* OpenAICompatibleService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OpenAICompatibleService.swift; sourceTree = "<group>"; };
 		257671BE2FCB8C4D00581CBD /* AnthropicAPIService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AnthropicAPIService.swift; sourceTree = "<group>"; };
 		257671C02FCB8C4E00581CBD /* GeminiAPIService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GeminiAPIService.swift; sourceTree = "<group>"; };
+		25C21C4A2FD196080073F3FC /* StreamWatchdog.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StreamWatchdog.swift; sourceTree = "<group>"; };
+		25C21C4C2FD196FD0073F3FC /* LaunchAtLoginService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LaunchAtLoginService.swift; sourceTree = "<group>"; };
+		25C21C4E2FD197A50073F3FC /* SettingsExporter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsExporter.swift; sourceTree = "<group>"; };
+		25C21C502FD1A3890073F3FC /* HelpTopic.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HelpTopic.swift; sourceTree = "<group>"; };
+		25C21C522FD1A3E70073F3FC /* HelpView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HelpView.swift; sourceTree = "<group>"; };
+		25C2834A2FD1DD5000269A2E /* UpdaterService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UpdaterService.swift; sourceTree = "<group>"; };
+		25F68FC52FD0D5DB0062C375 /* HotkeyService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HotkeyService.swift; sourceTree = "<group>"; };
+		25F68FC72FD0D5EF0062C375 /* HotkeyRecorderField.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HotkeyRecorderField.swift; sourceTree = "<group>"; };
+		25F68FC92FD0D8B80062C375 /* Mode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Mode.swift; sourceTree = "<group>"; };
+		25F68FCB2FD0D8BE0062C375 /* CustomModeStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomModeStore.swift; sourceTree = "<group>"; };
+		25F68FCD2FD0D91B0062C375 /* CustomModesView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomModesView.swift; sourceTree = "<group>"; };
+		25F68FCF2FD0D9CB0062C375 /* HistoryStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HistoryStore.swift; sourceTree = "<group>"; };
+		25F68FD12FD0D9E20062C375 /* HistoryView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HistoryView.swift; sourceTree = "<group>"; };
+		25F68FD32FD0DC680062C375 /* ModeHotkeysView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ModeHotkeysView.swift; sourceTree = "<group>"; };
+		25F68FD52FD0DD170062C375 /* WordDiff.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WordDiff.swift; sourceTree = "<group>"; };
+		25F68FD72FD0DD5D0062C375 /* PersonalInstructions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PersonalInstructions.swift; sourceTree = "<group>"; };
+		25F68FD92FD0DF760062C375 /* ModeOverridesStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ModeOverridesStore.swift; sourceTree = "<group>"; };
+		25F68FDB2FD0DFCB0062C375 /* ModeRoutingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ModeRoutingView.swift; sourceTree = "<group>"; };
+		25F68FDD2FD0E0120062C375 /* GenerationSettings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GenerationSettings.swift; sourceTree = "<group>"; };
+		25F68FDF2FD0E1380062C375 /* TokenEstimator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TokenEstimator.swift; sourceTree = "<group>"; };
+		25F68FE12FD0E1790062C375 /* OnboardingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnboardingView.swift; sourceTree = "<group>"; };
 		BB2222222222222222220001 /* ModoApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ModoApp.swift; sourceTree = "<group>"; };
 		BB2222222222222222220002 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		BB2222222222222222220003 /* ImprovementMode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImprovementMode.swift; sourceTree = "<group>"; };
@@ -54,6 +97,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				25C283492FD1D8DE00269A2E /* Sparkle in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -89,6 +133,8 @@
 			children = (
 				BB2222222222222222220003 /* ImprovementMode.swift */,
 				257671B82FCB8C4B00581CBD /* AIProvider.swift */,
+				25F68FC92FD0D8B80062C375 /* Mode.swift */,
+				25C21C502FD1A3890073F3FC /* HelpTopic.swift */,
 			);
 			path = Models;
 			sourceTree = "<group>";
@@ -101,6 +147,16 @@
 				257671BC2FCB8C4D00581CBD /* OpenAICompatibleService.swift */,
 				257671BE2FCB8C4D00581CBD /* AnthropicAPIService.swift */,
 				257671C02FCB8C4E00581CBD /* GeminiAPIService.swift */,
+				25F68FC52FD0D5DB0062C375 /* HotkeyService.swift */,
+				25F68FCB2FD0D8BE0062C375 /* CustomModeStore.swift */,
+				25F68FCF2FD0D9CB0062C375 /* HistoryStore.swift */,
+				25F68FD72FD0DD5D0062C375 /* PersonalInstructions.swift */,
+				25F68FD92FD0DF760062C375 /* ModeOverridesStore.swift */,
+				25F68FDD2FD0E0120062C375 /* GenerationSettings.swift */,
+				25C21C4A2FD196080073F3FC /* StreamWatchdog.swift */,
+				25C21C4C2FD196FD0073F3FC /* LaunchAtLoginService.swift */,
+				25C21C4E2FD197A50073F3FC /* SettingsExporter.swift */,
+				25C2834A2FD1DD5000269A2E /* UpdaterService.swift */,
 			);
 			path = Services;
 			sourceTree = "<group>";
@@ -114,6 +170,13 @@
 				BB222222222222222222000A /* FloatingPanelContentView.swift */,
 				BB222222222222222222000B /* FloatingWindowController.swift */,
 				BB222222222222222222000C /* PreferencesView.swift */,
+				25F68FC72FD0D5EF0062C375 /* HotkeyRecorderField.swift */,
+				25F68FCD2FD0D91B0062C375 /* CustomModesView.swift */,
+				25F68FD12FD0D9E20062C375 /* HistoryView.swift */,
+				25F68FD32FD0DC680062C375 /* ModeHotkeysView.swift */,
+				25F68FDB2FD0DFCB0062C375 /* ModeRoutingView.swift */,
+				25F68FE12FD0E1790062C375 /* OnboardingView.swift */,
+				25C21C522FD1A3E70073F3FC /* HelpView.swift */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -122,6 +185,8 @@
 			isa = PBXGroup;
 			children = (
 				BB2222222222222222220004 /* KeychainService.swift */,
+				25F68FD52FD0DD170062C375 /* WordDiff.swift */,
+				25F68FDF2FD0E1380062C375 /* TokenEstimator.swift */,
 			);
 			path = Utilities;
 			sourceTree = "<group>";
@@ -178,6 +243,9 @@
 				Base,
 			);
 			mainGroup = CC3333333333333333330001;
+			packageReferences = (
+				25C283472FD1D8DE00269A2E /* XCRemoteSwiftPackageReference "Sparkle" */,
+			);
 			productRefGroup = CC3333333333333333330007 /* Products */;
 			projectDirPath = "";
 			projectRoot = "";
@@ -204,21 +272,42 @@
 			buildActionMask = 2147483647;
 			files = (
 				257671C12FCB8C4E00581CBD /* GeminiAPIService.swift in Sources */,
+				25F68FDE2FD0E0120062C375 /* GenerationSettings.swift in Sources */,
+				25F68FDA2FD0DF760062C375 /* ModeOverridesStore.swift in Sources */,
 				AA1111111111111111110001 /* ModoApp.swift in Sources */,
 				AA1111111111111111110002 /* AppDelegate.swift in Sources */,
 				AA1111111111111111110003 /* ImprovementMode.swift in Sources */,
+				25F68FD82FD0DD5D0062C375 /* PersonalInstructions.swift in Sources */,
+				25F68FC62FD0D5DB0062C375 /* HotkeyService.swift in Sources */,
 				AA1111111111111111110004 /* KeychainService.swift in Sources */,
+				25F68FD22FD0D9E20062C375 /* HistoryView.swift in Sources */,
+				25C2834B2FD1DD5000269A2E /* UpdaterService.swift in Sources */,
 				AA1111111111111111110005 /* AccessibilityService.swift in Sources */,
 				AA1111111111111111110007 /* WindowViewModel.swift in Sources */,
+				25C21C4B2FD196080073F3FC /* StreamWatchdog.swift in Sources */,
+				25C21C532FD1A3E70073F3FC /* HelpView.swift in Sources */,
 				257671BF2FCB8C4D00581CBD /* AnthropicAPIService.swift in Sources */,
+				25F68FCC2FD0D8BE0062C375 /* CustomModeStore.swift in Sources */,
+				25C21C4D2FD196FD0073F3FC /* LaunchAtLoginService.swift in Sources */,
 				AA1111111111111111110008 /* ModeSelectionView.swift in Sources */,
 				257671B92FCB8C4B00581CBD /* AIProvider.swift in Sources */,
+				25F68FCE2FD0D91B0062C375 /* CustomModesView.swift in Sources */,
+				25F68FDC2FD0DFCB0062C375 /* ModeRoutingView.swift in Sources */,
+				25F68FD62FD0DD170062C375 /* WordDiff.swift in Sources */,
 				AA1111111111111111110009 /* ResultView.swift in Sources */,
+				25F68FE22FD0E1790062C375 /* OnboardingView.swift in Sources */,
+				25C21C4F2FD197A50073F3FC /* SettingsExporter.swift in Sources */,
+				25F68FD42FD0DC680062C375 /* ModeHotkeysView.swift in Sources */,
+				25F68FD02FD0D9CB0062C375 /* HistoryStore.swift in Sources */,
+				25F68FE02FD0E1380062C375 /* TokenEstimator.swift in Sources */,
 				AA111111111111111111000A /* FloatingPanelContentView.swift in Sources */,
 				257671BD2FCB8C4D00581CBD /* OpenAICompatibleService.swift in Sources */,
+				25F68FCA2FD0D8B80062C375 /* Mode.swift in Sources */,
 				AA111111111111111111000B /* FloatingWindowController.swift in Sources */,
 				257671BB2FCB8C4C00581CBD /* AIProviderService.swift in Sources */,
+				25F68FC82FD0D5EF0062C375 /* HotkeyRecorderField.swift in Sources */,
 				AA111111111111111111000C /* PreferencesView.swift in Sources */,
+				25C21C512FD1A3890073F3FC /* HelpTopic.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -352,10 +441,12 @@
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
 				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = 828QNBLBHS;
 				ENABLE_HARDENED_RUNTIME = YES;
 				GENERATE_INFOPLIST_FILE = NO;
 				INFOPLIST_FILE = Modo/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = Modo;
+				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.utilities";
 				INFOPLIST_KEY_NSHumanReadableCopyright = "";
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -379,10 +470,12 @@
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
 				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = 828QNBLBHS;
 				ENABLE_HARDENED_RUNTIME = YES;
 				GENERATE_INFOPLIST_FILE = NO;
 				INFOPLIST_FILE = Modo/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = Modo;
+				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.utilities";
 				INFOPLIST_KEY_NSHumanReadableCopyright = "";
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -419,6 +512,25 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		25C283472FD1D8DE00269A2E /* XCRemoteSwiftPackageReference "Sparkle" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/sparkle-project/Sparkle";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 2.9.2;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		25C283482FD1D8DE00269A2E /* Sparkle */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 25C283472FD1D8DE00269A2E /* XCRemoteSwiftPackageReference "Sparkle" */;
+			productName = Sparkle;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = EE5555555555555555550002 /* Project object */;
 }
