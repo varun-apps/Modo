@@ -2,7 +2,6 @@ import Foundation
 
 final class GeminiAPIService: AIProviderService {
     private let provider: AIProvider
-    private let maxTokens = 2048
 
     init(provider: AIProvider) {
         self.provider = provider
@@ -10,15 +9,17 @@ final class GeminiAPIService: AIProviderService {
 
     func streamImprovement(
         text: String,
-        mode: ImprovementMode,
+        mode: Mode,
+        modelOverride: String?,
         onDelta: @escaping (String) -> Void
     ) async throws {
         guard let apiKey = KeychainService.loadKey(for: provider.keychainAccount), !apiKey.isEmpty else {
             throw APIError.missingAPIKey
         }
 
+        let modelID = modelOverride ?? provider.currentModelID
         var components = URLComponents(
-            string: "https://generativelanguage.googleapis.com/v1beta/models/\(provider.currentModelID):streamGenerateContent"
+            string: "https://generativelanguage.googleapis.com/v1beta/models/\(modelID):streamGenerateContent"
         )!
         components.queryItems = [
             URLQueryItem(name: "key", value: apiKey),
@@ -32,9 +33,12 @@ final class GeminiAPIService: AIProviderService {
 
         let userContent = mode.isDirectPrompt ? text : "<text>\(text)</text>"
         let body: [String: Any] = [
-            "system_instruction": ["parts": [["text": mode.systemPrompt]]],
+            "system_instruction": ["parts": [["text": PersonalInstructions.composeSystemPrompt(for: mode)]]],
             "contents": [["role": "user", "parts": [["text": userContent]]]],
-            "generationConfig": ["maxOutputTokens": maxTokens]
+            "generationConfig": [
+                "maxOutputTokens": GenerationSettings.length.maxTokens,
+                "temperature": GenerationSettings.temperature
+            ]
         ]
         request.httpBody = try JSONSerialization.data(withJSONObject: body)
 

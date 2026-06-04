@@ -3,7 +3,6 @@ import Foundation
 final class AnthropicAPIService: AIProviderService {
     private let provider: AIProvider
     private let endpoint = URL(string: "https://api.anthropic.com/v1/messages")!
-    private let maxTokens = 2048
 
     init(provider: AIProvider) {
         self.provider = provider
@@ -11,7 +10,8 @@ final class AnthropicAPIService: AIProviderService {
 
     func streamImprovement(
         text: String,
-        mode: ImprovementMode,
+        mode: Mode,
+        modelOverride: String?,
         onDelta: @escaping (String) -> Void
     ) async throws {
         guard let apiKey = KeychainService.loadKey(for: provider.keychainAccount), !apiKey.isEmpty else {
@@ -26,10 +26,11 @@ final class AnthropicAPIService: AIProviderService {
 
         let userContent = mode.isDirectPrompt ? text : "<text>\(text)</text>"
         let body: [String: Any] = [
-            "model":      provider.currentModelID,
-            "max_tokens": maxTokens,
-            "stream":     true,
-            "system":     mode.systemPrompt,
+            "model":       modelOverride ?? provider.currentModelID,
+            "max_tokens":  GenerationSettings.length.maxTokens,
+            "temperature": GenerationSettings.temperature,
+            "stream":      true,
+            "system":      PersonalInstructions.composeSystemPrompt(for: mode),
             "messages": [["role": "user", "content": userContent]]
         ]
         request.httpBody = try JSONSerialization.data(withJSONObject: body)

@@ -4,7 +4,6 @@ import Foundation
 final class OpenAICompatibleService: AIProviderService {
     private let endpoint: URL
     private let provider: AIProvider
-    private let maxTokens = 2048
 
     init(endpoint: URL, provider: AIProvider) {
         self.endpoint = endpoint
@@ -13,24 +12,29 @@ final class OpenAICompatibleService: AIProviderService {
 
     func streamImprovement(
         text: String,
-        mode: ImprovementMode,
+        mode: Mode,
+        modelOverride: String?,
         onDelta: @escaping (String) -> Void
     ) async throws {
-        guard let apiKey = KeychainService.loadKey(for: provider.keychainAccount), !apiKey.isEmpty else {
+        let apiKey = KeychainService.loadKey(for: provider.keychainAccount) ?? ""
+        if provider.requiresAPIKey && apiKey.isEmpty {
             throw APIError.missingAPIKey
         }
 
         var request = URLRequest(url: endpoint)
         request.httpMethod = "POST"
         request.setValue("application/json", forHTTPHeaderField: "Content-Type")
-        request.setValue("Bearer \(apiKey)", forHTTPHeaderField: "Authorization")
+        if !apiKey.isEmpty {
+            request.setValue("Bearer \(apiKey)", forHTTPHeaderField: "Authorization")
+        }
 
         let body: [String: Any] = [
-            "model":      provider.currentModelID,
-            "max_tokens": maxTokens,
-            "stream":     true,
+            "model":       modelOverride ?? provider.currentModelID,
+            "max_tokens":  GenerationSettings.length.maxTokens,
+            "temperature": GenerationSettings.temperature,
+            "stream":      true,
             "messages": [
-                ["role": "system", "content": mode.systemPrompt],
+                ["role": "system", "content": PersonalInstructions.composeSystemPrompt(for: mode)],
                 ["role": "user",   "content": mode.isDirectPrompt ? text : "<text>\(text)</text>"]
             ]
         ]
@@ -68,6 +72,9 @@ final class OpenAICompatibleService: AIProviderService {
             }
         } catch let error as APIError {
             throw error
+        } catch let urlError as URLError where provider == .ollama &&
+                (urlError.code == .cannotConnectToHost || urlError.code == .cannotFindHost) {
+            throw APIError.network("Ollama doesn't appear to be running. Open Terminal and run `ollama serve`, or start the Ollama app.")
         } catch {
             throw APIError.network(error.localizedDescription)
         }

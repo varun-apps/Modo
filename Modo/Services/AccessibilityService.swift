@@ -2,6 +2,13 @@ import AppKit
 import ApplicationServices
 import CoreGraphics
 
+@inline(__always)
+private func axLog(_ message: @autoclosure () -> String) {
+#if DEBUG
+    print("[AX] \(message())")
+#endif
+}
+
 /// Reads the currently selected text from any app and writes improved text
 /// back. Uses a layered strategy so it works both with apps that expose the
 /// Accessibility text APIs (TextEdit, Xcode, native NSTextViews) and with apps
@@ -65,50 +72,98 @@ final class AccessibilityService {
     /// first and falling back to a clipboard copy for apps that don't expose
     /// the AX text attributes. Returns nil only when nothing is selected.
     func readSelectedText() -> String? {
-        print("[WB-AX] readSelectedText called")
-        print("[WB-AX] isTrusted: \(isTrusted)")
+        axLog("readSelectedText called, isTrusted=\(isTrusted)")
         focusedElement = nil
         guard isTrusted else {
-            print("[WB-AX] aborting — accessibility not trusted")
+            axLog("aborting — accessibility not trusted")
             return nil
         }
 
         sourceApp = NSWorkspace.shared.frontmostApplication
-        print("[WB-AX] frontmostApp: \(sourceApp?.localizedName ?? "nil") (pid \(sourceApp?.processIdentifier ?? -1))")
+        axLog("frontmostApp: \(sourceApp?.localizedName ?? "nil")")
 
         let systemWide = AXUIElementCreateSystemWide()
         var focusedRef: CFTypeRef?
         let focusErr = AXUIElementCopyAttributeValue(
             systemWide, kAXFocusedUIElementAttribute as CFString, &focusedRef)
-        print("[WB-AX] focused element error: \(focusErr.rawValue)")
+
+        // -25212 == kAXErrorCannotComplete. This typically means the source
+        // app is unresponsive to AX queries. Synthesizing ⌘C at an
+        // unresponsive app is dangerous: the events queue in the window
+        // server with the Command-modifier flag latched, and the next
+        // user click/keystroke gets interpreted as Command-click / ⌘key.
+        let sourceUnresponsive = (focusErr.rawValue == -25212)
+
+        // Track whether AX *worked* against the focused element — even if it
+        // reported an empty selection. When AX-aware apps (Xcode, native text
+        // views) report "no selection", we must NOT fall through to the ⌘C
+        // fallback: poking a happy app with synthesized modifier-stamped
+        // keystrokes is what was latching the Command flag in the window
+        // server and blocking subsequent input.
+        var axReportedDefinitiveNoSelection = false
+
         if focusErr == .success, let focused = focusedRef {
             let element = focused as! AXUIElement
             focusedElement = element
 
             // Strategy 1: direct selected-text attribute.
-            if let text = selectedTextAttribute(of: element), !text.isEmpty {
-                print("[WB-AX] strategy 1 succeeded: '\(text.prefix(60))'")
-                return text
+            var textRef: CFTypeRef?
+            let textStatus = AXUIElementCopyAttributeValue(
+                element, kAXSelectedTextAttribute as CFString, &textRef)
+            if textStatus == .success {
+                if let text = textRef as? String, !text.isEmpty {
+                    axLog("strategy 1 succeeded")
+                    return text
+                }
+                // AX is working; the user genuinely has no selection.
+                axReportedDefinitiveNoSelection = true
             }
-            print("[WB-AX] strategy 1 failed")
 
             // Strategy 2: selected range → string-for-range parameterized attr.
-            if let text = selectedTextViaRange(of: element), !text.isEmpty {
-                print("[WB-AX] strategy 2 succeeded: '\(text.prefix(60))'")
-                return text
+            var rangeRef: CFTypeRef?
+            let rangeStatus = AXUIElementCopyAttributeValue(
+                element, kAXSelectedTextRangeAttribute as CFString, &rangeRef)
+            if rangeStatus == .success, let rangeValue = rangeRef {
+                var stringRef: CFTypeRef?
+                let stringStatus = AXUIElementCopyParameterizedAttributeValue(
+                    element,
+                    kAXStringForRangeParameterizedAttribute as CFString,
+                    rangeValue,
+                    &stringRef)
+                if stringStatus == .success {
+                    if let text = stringRef as? String, !text.isEmpty {
+                        axLog("strategy 2 succeeded")
+                        return text
+                    }
+                    axReportedDefinitiveNoSelection = true
+                }
             }
-            print("[WB-AX] strategy 2 failed")
         } else {
-            print("[WB-AX] could not get focused element")
+            axLog("could not get focused element (err=\(focusErr.rawValue))")
+        }
+
+        // Skip the clipboard fallback when the source app is unresponsive —
+        // synthesized keystrokes against an unresponsive app are exactly what
+        // produced the "Modo blocks events for other apps" bug.
+        guard !sourceUnresponsive else {
+            axLog("source app unresponsive (-25212); skipping clipboard fallback")
+            return nil
+        }
+
+        // If AX explicitly told us there is no selection, trust it. The ⌘C
+        // fallback is only for apps where AX doesn't expose text attributes
+        // at all (Notes, Mail, Electron editors).
+        guard !axReportedDefinitiveNoSelection else {
+            axLog("AX reports no selection; skipping clipboard fallback")
+            return nil
         }
 
         // Strategy 3: clipboard fallback (Notes, Mail, Word, web/Electron editors).
-        print("[WB-AX] trying strategy 3 — clipboard copy")
         if let text = selectionViaClipboardCopy(), !text.isEmpty {
-            print("[WB-AX] strategy 3 succeeded: '\(text.prefix(60))'")
+            axLog("strategy 3 (clipboard) succeeded")
             return text
         }
-        print("[WB-AX] all strategies failed — returning nil")
+        axLog("all strategies failed — returning nil")
         return nil
     }
 
@@ -136,13 +191,18 @@ final class AccessibilityService {
 
     // MARK: - Writing text back
 
+    /// Outcome of a `replaceSelectedText(with:)` call.
+    enum ReplaceOutcome {
+        case replacedInPlace
+        case pastedViaClipboard
+        case accessibilityRevoked
+        case failed
+    }
+
     /// Replaces the selection. Tries the AX text API first; if the host app
-    /// rejects it (Notes etc.), pastes via the clipboard instead. Returns true
-    /// when the original text was replaced in place, false when we could only
-    /// leave the result on the clipboard.
-    @discardableResult
-    func replaceSelectedText(with newText: String) -> Bool {
-        guard isTrusted else { return false }
+    /// rejects it (Notes etc.), pastes via the clipboard instead.
+    func replaceSelectedText(with newText: String) -> ReplaceOutcome {
+        guard isTrusted else { return .accessibilityRevoked }
 
         // Strategy 1: AX set value on the captured focused element.
         if let element = focusedElement {
@@ -152,12 +212,30 @@ final class AccessibilityService {
             if settable.boolValue {
                 let err = AXUIElementSetAttributeValue(
                     element, kAXSelectedTextAttribute as CFString, newText as CFTypeRef)
-                if err == .success { return true }
+                if err == .success {
+                    // Leave the cursor at the end of the inserted text rather
+                    // than re-selecting the whole insertion.
+                    let endRange = CFRange(location: (newText as NSString).length, length: 0)
+                    if let value = AXValueCreate(.cfRange, withUnsafePointer(to: endRange) { $0 }) {
+                        AXUIElementSetAttributeValue(
+                            element, kAXSelectedTextRangeAttribute as CFString, value)
+                    }
+                    return .replacedInPlace
+                }
             }
         }
 
         // Strategy 2: paste via the clipboard (works wherever ⌘V works).
-        return pasteViaClipboard(newText)
+        return pasteViaClipboard(newText) ? .pastedViaClipboard : .failed
+    }
+
+    /// Brings the app that owned the original selection back to the front.
+    /// Call this whenever the popover is dismissed so the user's editor regains
+    /// focus instead of leaving them in a "what just took my focus?" state.
+    func reactivateSourceApp() {
+        if let sourceApp, !sourceApp.isActive {
+            sourceApp.activate()
+        }
     }
 
     // MARK: - Clipboard-based fallbacks
@@ -171,14 +249,15 @@ final class AccessibilityService {
 
         sendCommandShortcut(keyC)
 
-        // Poll for the front app to update the pasteboard (up to ~300ms).
+        // Poll for the front app to update the pasteboard. 500ms is generous
+        // for sluggish apps without making the popover feel laggy.
         var copied: String?
-        for _ in 0..<30 {
+        waitForCondition(timeoutMS: 500) {
             if pasteboard.changeCount != beforeCount {
                 copied = pasteboard.string(forType: .string)
-                break
+                return true
             }
-            usleep(10_000) // 10ms
+            return false
         }
 
         restorePasteboard(pasteboard, from: saved)
@@ -187,37 +266,76 @@ final class AccessibilityService {
 
     /// Puts `text` on the pasteboard and synthesizes ⌘V to paste it over the
     /// current selection, then restores the previous pasteboard contents.
+    /// Waits for the destination app to acknowledge the paste by observing the
+    /// pasteboard's changeCount, rather than relying on a fixed delay.
     private func pasteViaClipboard(_ text: String) -> Bool {
         let pasteboard = NSPasteboard.general
         let saved = snapshotPasteboard(pasteboard)
 
         pasteboard.clearContents()
         pasteboard.setString(text, forType: .string)
+        let afterWrite = pasteboard.changeCount
 
         // Our panel may have taken focus; bring the source app back to the
         // front so ⌘V is delivered to it, then give it a moment to focus.
         if let sourceApp, !sourceApp.isActive {
             sourceApp.activate()
-            usleep(80_000) // 80ms for activation to settle
+            waitForCondition(timeoutMS: 400) { sourceApp.isActive }
         }
 
         sendCommandShortcut(keyV)
 
-        // Give the front app a moment to read the pasteboard before we restore.
-        usleep(120_000) // 120ms
+        // Wait for the destination app to consume the pasteboard (it may read
+        // and write to it) or for a soft timeout. This is far more reliable
+        // than a fixed sleep, especially on slower Macs.
+        waitForCondition(timeoutMS: 500) { pasteboard.changeCount != afterWrite }
+
         restorePasteboard(pasteboard, from: saved)
         return true
     }
 
+    /// Polls `condition` every 10ms up to `timeoutMS` and returns true if it
+    /// ever became true. Used to wait on activation / pasteboard reads without
+    /// hard-coded sleeps.
+    @discardableResult
+    private func waitForCondition(timeoutMS: Int, _ condition: () -> Bool) -> Bool {
+        let steps = max(1, timeoutMS / 10)
+        for _ in 0..<steps {
+            if condition() { return true }
+            usleep(10_000)
+        }
+        return false
+    }
+
     /// Posts a Command-modified key down/up pair to the front application.
+    /// The keystroke is bracketed by explicit "modifiers cleared" events so a
+    /// dropped/queued ⌘ key cannot leave the window server believing Command
+    /// is still held — that latched-modifier state was the root cause of the
+    /// "Modo blocks events for other apps" bug.
     private func sendCommandShortcut(_ key: CGKeyCode) {
         let source = CGEventSource(stateID: .combinedSessionState)
+        let tap: CGEventTapLocation = .cgAnnotatedSessionEventTap
+
+        clearModifiers(source: source, tap: tap)
+
         let down = CGEvent(keyboardEventSource: source, virtualKey: key, keyDown: true)
         let up = CGEvent(keyboardEventSource: source, virtualKey: key, keyDown: false)
         down?.flags = .maskCommand
         up?.flags = .maskCommand
-        down?.post(tap: .cgAnnotatedSessionEventTap)
-        up?.post(tap: .cgAnnotatedSessionEventTap)
+        down?.post(tap: tap)
+        up?.post(tap: tap)
+
+        clearModifiers(source: source, tap: tap)
+    }
+
+    /// Posts a `flagsChanged` event with no modifier flags set. The window
+    /// server uses these events to track modifier state — sending an explicit
+    /// "no modifiers" event reliably releases anything that got stuck.
+    private func clearModifiers(source: CGEventSource?, tap: CGEventTapLocation) {
+        guard let event = CGEvent(source: source) else { return }
+        event.type = .flagsChanged
+        event.flags = []
+        event.post(tap: tap)
     }
 
     // MARK: - Pasteboard snapshot/restore
