@@ -4,6 +4,10 @@
 
 Select text → press a hotkey (or click the **M** in the menu bar) → pick a mode → Modo streams the rewrite back. Replace your selection in place, or copy the result.
 
+### [⬇ Download for macOS](https://github.com/varun-apps/Modo/releases/latest)
+
+Signed & notarized · macOS 13+ · Apple silicon and Intel
+
 ---
 
 ## Highlights
@@ -23,10 +27,13 @@ Select text → press a hotkey (or click the **M** in the menu bar) → pick a m
 
 ## Install
 
-1. Open **Modo.dmg** and drag Modo to your **Applications** folder.
-2. Launch Modo — the **M** icon appears in your menu bar.
-3. If macOS warns about an internet download, click **Open**.
-4. The first-run **Welcome** wizard walks you through API key setup and Accessibility permission.
+1. Download the latest **Modo-x.y.zip** from the [Releases page](https://github.com/varun-apps/Modo/releases/latest).
+2. Unzip it (Finder does this automatically on double-click) and drag **Modo.app** into your **Applications** folder.
+3. Launch Modo — the **M** icon appears in your menu bar.
+4. If macOS warns about an internet download, click **Open**. The app is signed with a Developer ID and notarized by Apple.
+5. The first-run **Welcome** wizard walks you through API key setup and Accessibility permission.
+
+After install, Modo checks for updates automatically via Sparkle — no need to revisit the Releases page for future versions.
 
 ---
 
