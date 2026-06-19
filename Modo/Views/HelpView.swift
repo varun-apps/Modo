@@ -138,14 +138,20 @@ struct HelpContent: View {
 
     private var threeWays: some View {
         VStack(alignment: .leading, spacing: 12) {
-            H2("Menu bar click")
-            Text("Left-click the **M** in the menu bar. Modo reads your current selection and opens the mode picker.")
+            H2("Selection bubble (recommended)")
+            Text("Select text in any AX-aware app and a small **Modo** bubble appears next to the selection. Click it to open the popover with your selection ready to rewrite. Enable in Preferences → Selection Bubble.")
 
             H2("Global hotkey")
             Text("Press your configured global hotkey from anywhere — Modo opens the popover with the current selection. Default is **⌥ Space**; change it in Preferences → Global Hotkey.")
 
             H2("Per-mode hotkeys")
             Text("Bind a key combination to a specific mode in Preferences → Configure Per-Mode Hotkeys. Pressing it skips the menu and runs that mode directly on your selection.")
+
+            H2("Right-click → Services → Improve with Modo")
+            Text("In any app, right-click your selected text and pick **Services → Improve with Modo**. The popover opens pre-loaded with your selection — works even in apps that don't expose Accessibility text APIs (Notes, Mail, Slack, etc.). You can assign a system shortcut to this Service in **System Settings → Keyboard → Keyboard Shortcuts → Services**.")
+
+            H2("Menu bar icon")
+            Text("Click the **M** in the menu bar to open the menu (Open Modo, Preferences, History, Help, Check for Updates, Quit). Choose **Open Modo** to launch the popover when no text is selected, or use the hotkey / bubble for fastest access.")
 
             H2("Inside the popover")
             Text("Once the popover is open, you can move even faster:")

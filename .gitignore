@@ -45,5 +45,15 @@ PreviewContent/
 *.p12
 *.mobileprovision
 
+# Local environment files (release credentials, paths, etc.)
+.env
+.env.local
+
 # Export
 ExportOptions.plist
+
+# Local distribution / release tooling — kept private (contains personal
+# Apple Team ID, notary profile name, signed appcast). Each maintainer keeps
+# their own copy locally; the appcast.xml is uploaded as a GitHub Release
+# asset, not committed to the repo.
+Distribution/

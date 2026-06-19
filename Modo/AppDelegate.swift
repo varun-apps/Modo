@@ -15,6 +15,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     // Hold a strong reference so Sparkle's background scheduler keeps running
     // for the life of the app.
     private let updaterService = UpdaterService.shared
+    private let overlayController = SelectionOverlayController()
 
     func applicationDidFinishLaunching(_ notification: Notification) {
         // Accessory app: no Dock icon, no main menu. (Also enforced by
@@ -24,6 +25,8 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         setupStatusItem()
         setupGlobalHotkey()
         setupHelpListener()
+        setupSelectionOverlay()
+        setupServicesProvider()
 
         // On first launch, show the in-app onboarding flow which walks the
         // user through API key + Accessibility setup. Otherwise fall back to
@@ -32,6 +35,57 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
             openOnboarding()
         } else {
             AccessibilityService.shared.promptForPermissionIfNeeded()
+        }
+    }
+
+    private func setupServicesProvider() {
+        NSApp.servicesProvider = self
+        // Ask macOS to re-scan the registered services so "Improve with Modo"
+        // shows up in Services menus without requiring a logout. The cache
+        // also refreshes naturally when the app is launched from /Applications.
+        NSUpdateDynamicServices()
+    }
+
+    /// macOS Service handler — invoked when the user picks
+    /// "Services → Improve with Modo" from any app's right-click menu.
+    /// The selected text arrives on `pasteboard`; we pre-load it and open the
+    /// regular popover anchored on the menu-bar icon.
+    @objc func improveWithModo(_ pasteboard: NSPasteboard,
+                               userData: String,
+                               error: AutoreleasingUnsafeMutablePointer<NSString>) {
+        guard let text = pasteboard.string(forType: .string),
+              !text.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty else {
+            error.pointee = "Modo could not read the selected text." as NSString
+            return
+        }
+        Task { @MainActor [weak self] in
+            self?.showFloatingWindow(withText: text)
+        }
+    }
+
+    /// Opens the popover and pre-loads it with `text`, bypassing the AX
+    /// read entirely. Used by the Services menu and the selection overlay.
+    func showFloatingWindow(withText text: String) {
+        guard let button = statusItem?.button else { return }
+        windowController.show(withText: text, relativeTo: button)
+    }
+
+    private func setupSelectionOverlay() {
+        overlayController.onActivate = { [weak self] in
+            self?.toggleFloatingWindow()
+        }
+        if SelectionOverlayController.isEnabled {
+            overlayController.start()
+        }
+    }
+
+    /// Public entry point used by Preferences when the toggle changes.
+    func setSelectionOverlayEnabled(_ enabled: Bool) {
+        SelectionOverlayController.setEnabled(enabled)
+        if enabled {
+            overlayController.start()
+        } else {
+            overlayController.stop()
         }
     }
 
@@ -68,7 +122,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
             // Receive both left and right mouse-up events.
             button.sendAction(on: [.leftMouseUp, .rightMouseUp])
             // Native macOS tooltip — appears after a short hover.
-            button.toolTip = "Modo — click to rewrite the selected text. Right-click for Preferences, History, and Help."
+            button.toolTip = "Modo — click for Open Modo, Preferences, History, and Help. Select text in any app to see the Modo bubble next to it."
         }
 
         // Pulse the menu-bar icon while a stream is in flight so users on
@@ -103,13 +157,10 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     }
 
     @objc private func statusItemClicked(_ sender: NSStatusBarButton) {
-        let event = NSApp.currentEvent
-        if event?.type == .rightMouseUp ||
-            (event?.modifierFlags.contains(.control) ?? false) {
-            showContextMenu()
-        } else {
-            toggleFloatingWindow()
-        }
+        // Both left- and right-click now show the same menu. The popover
+        // itself is opened via the floating selection overlay, the global
+        // hotkey, per-mode hotkeys, or the "Open Modo" menu item.
+        showContextMenu()
     }
 
     private func toggleFloatingWindow() {
@@ -119,6 +170,13 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
 
     private func showContextMenu() {
         let menu = NSMenu()
+
+        let openItem = NSMenuItem(title: "Open Modo",
+                                  action: #selector(openModoFromMenu),
+                                  keyEquivalent: "")
+        menu.addItem(openItem)
+        menu.addItem(.separator())
+
         menu.addItem(NSMenuItem(title: "Preferences…",
                                 action: #selector(openPreferences),
                                 keyEquivalent: ","))
@@ -141,10 +199,14 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
                                 keyEquivalent: "q"))
 
         // Temporarily attach the menu so it pops from the status item, then
-        // detach so left-clicks still trigger our action.
+        // detach so future clicks still trigger our action selector.
         statusItem.menu = menu
         statusItem.button?.performClick(nil)
         statusItem.menu = nil
+    }
+
+    @objc private func openModoFromMenu() {
+        toggleFloatingWindow()
     }
 
     @objc private func openPreferences() {
