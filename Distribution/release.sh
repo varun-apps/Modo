@@ -41,11 +41,25 @@ fi
 VERSION="$1"
 SCHEME="Modo"
 PROJECT="Modo.xcodeproj"
-TEAM_ID="${TEAM_ID:-REPLACE_WITH_YOUR_TEAM_ID}"
-NOTARY_PROFILE="${NOTARY_PROFILE:-modo-notary}"
-REPO="${REPO:-varun-apps/Modo}"
 
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
+
+# Load .env if present. allexport makes every variable in the file
+# automatically exported for the rest of the script. Command-line overrides
+# (e.g. `TEAM_ID=… ./release.sh 1.0`) still win because they're already in
+# the environment when this runs.
+if [[ -f "$ROOT/.env" ]]; then
+  set -o allexport
+  # shellcheck disable=SC1091
+  source "$ROOT/.env"
+  set +o allexport
+fi
+
+# Required values — fail fast with a clear message if missing.
+: "${TEAM_ID:?TEAM_ID is not set. Add it to .env (see .env.example) or export it before running.}"
+: "${NOTARY_PROFILE:?NOTARY_PROFILE is not set. Add it to .env (see .env.example).}"
+: "${REPO:?REPO is not set. Add it to .env (see .env.example).}"
+: "${MIN_MACOS_VERSION:=13.0}"
 BUILD_DIR="$ROOT/build"
 ARCHIVE_PATH="$BUILD_DIR/Modo.xcarchive"
 EXPORT_DIR="$BUILD_DIR/export"
@@ -103,7 +117,7 @@ cat <<EOF
       <title>Version $VERSION</title>
       <sparkle:version>$VERSION</sparkle:version>
       <sparkle:shortVersionString>$VERSION</sparkle:shortVersionString>
-      <sparkle:minimumSystemVersion>13.0</sparkle:minimumSystemVersion>
+      <sparkle:minimumSystemVersion>$MIN_MACOS_VERSION</sparkle:minimumSystemVersion>
       <pubDate>$PUBDATE</pubDate>
       <description><![CDATA[
         <ul>

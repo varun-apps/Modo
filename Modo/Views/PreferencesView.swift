@@ -10,6 +10,7 @@ struct PreferencesView: View {
     @State private var hotkeyModifiers: UInt32 = HotkeyService.shared.currentModifiers
     @State private var globalHotkeyConflict: Bool = HotkeyService.shared.failedBindings["global"] != nil
     @State private var openAtLogin: Bool = LaunchAtLoginService.isEnabled
+    @State private var selectionOverlayEnabled: Bool = SelectionOverlayController.isEnabled
     @ObservedObject private var updater = UpdaterService.shared
     @State private var customModes: [Mode] = CustomModeStore.shared.load()
     @State private var showingCustomModes = false
@@ -150,6 +151,21 @@ struct PreferencesView: View {
                     .foregroundStyle(.secondary)
             } header: {
                 Text("Custom Modes")
+            }
+
+            Section {
+                Toggle("Show floating Modo bubble next to selected text",
+                       isOn: $selectionOverlayEnabled)
+                    .onChange(of: selectionOverlayEnabled) { _, newValue in
+                        if let delegate = NSApp.delegate as? AppDelegate {
+                            delegate.setSelectionOverlayEnabled(newValue)
+                        }
+                    }
+                Text("When on, Modo watches for text selections in other apps and shows a small bubble next to your selection. Click the bubble to open Modo. Works in apps that expose Accessibility text APIs (most native macOS apps).")
+                    .font(.footnote)
+                    .foregroundStyle(.secondary)
+            } header: {
+                Text("Selection Bubble")
             }
 
             Section {

@@ -27,7 +27,15 @@ final class FloatingWindowController: NSObject, NSPopoverDelegate {
         ) { [weak self] note in
             let activated = note.userInfo?[NSWorkspace.applicationUserInfoKey] as? NSRunningApplication
             guard activated?.processIdentifier != ownPID else { return }
-            Task { @MainActor [weak self] in self?.close() }
+            Task { @MainActor [weak self] in
+                // CRITICAL: only run the close path when our popover is
+                // actually visible. Otherwise every normal app switch would
+                // trigger reactivateSourceApp() and yank focus back to
+                // whatever app was cached as the source — making it look
+                // like other apps "can't take focus" when Modo is running.
+                guard let self, self.popover?.isShown == true else { return }
+                self.close()
+            }
         }
     }
 
@@ -49,6 +57,22 @@ final class FloatingWindowController: NSObject, NSPopoverDelegate {
         show(relativeTo: statusButton)
         guard let mode = viewModel.availableModes.first(where: { $0.id == modeID }) else { return }
         viewModel.run(mode: mode)
+    }
+
+    /// Opens the popover with `text` pre-loaded as the selection, skipping the
+    /// AX read. Used by the macOS Services menu ("Improve with Modo") and the
+    /// floating selection overlay.
+    func show(withText text: String, relativeTo statusButton: NSStatusBarButton) {
+        let popover = popover ?? makePopover()
+        self.popover = popover
+
+        viewModel.replaceSelection(with: text)
+
+        popover.show(relativeTo: statusButton.bounds,
+                     of: statusButton,
+                     preferredEdge: .minY)
+
+        installKeyMonitor()
     }
 
     private func show(relativeTo statusButton: NSStatusBarButton) {

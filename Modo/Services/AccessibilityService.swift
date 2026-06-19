@@ -35,28 +35,14 @@ final class AccessibilityService {
 
     var isTrusted: Bool { AXIsProcessTrusted() }
 
-    /// On first launch, if not trusted, show a one-time alert pointing the
-    /// user to System Settings. Also triggers the system prompt.
+    /// On first launch, if not trusted, ask macOS to show its native
+    /// "<App> would like to control this computer" dialog. The system handles
+    /// the Open System Settings path itself — we don't add a second NSAlert
+    /// because doing so showed the user two back-to-back permission popups.
     func promptForPermissionIfNeeded() {
         guard !isTrusted else { return }
-
         let options = [kAXTrustedCheckOptionPrompt.takeUnretainedValue() as String: true]
         _ = AXIsProcessTrustedWithOptions(options as CFDictionary)
-
-        let alert = NSAlert()
-        alert.messageText = "Enable Accessibility for Modo"
-        alert.informativeText = """
-        Modo needs Accessibility access to read the text you select in \
-        other apps and to replace it with improved text.
-
-        Open System Settings → Privacy & Security → Accessibility and turn on \
-        Modo.
-        """
-        alert.addButton(withTitle: "Open System Settings")
-        alert.addButton(withTitle: "Later")
-        if alert.runModal() == .alertFirstButtonReturn {
-            openAccessibilitySettings()
-        }
     }
 
     func openAccessibilitySettings() {
@@ -167,6 +153,89 @@ final class AccessibilityService {
         return nil
     }
 
+    // MARK: - Lightweight selection probe (no keystroke fallback)
+
+    /// Quick, side-effect-free read of the current AX selection: the text and
+    /// its on-screen bounding rect, in **screen (bottom-left origin)** AppKit
+    /// coordinates. Used by `SelectionMonitor` to decide whether to show the
+    /// floating overlay near a user's selection.
+    ///
+    /// Returns `nil` when there is no selection, when the source app is
+    /// unresponsive, when the focused element refuses AX text attributes, or
+    /// when the bounding rect can't be retrieved — all of those mean "don't
+    /// show the overlay". This function NEVER synthesizes keystrokes.
+    ///
+    /// Safe to call from any thread. Internally caps each AX call at 250 ms
+    /// so a slow target app can't stall the caller — without this, repeated
+    /// sync AX queries against an unresponsive app would back up the
+    /// WindowServer's delivery queue and delay focus changes in unrelated
+    /// apps.
+    nonisolated static func peekSelectionWithBounds() -> (text: String, bounds: CGRect)? {
+        guard AXIsProcessTrusted() else { return nil }
+
+        let systemWide = AXUIElementCreateSystemWide()
+        // Per-element timeout. AX defaults to ~6 seconds, which is unacceptable
+        // for a 1Hz background poller.
+        AXUIElementSetMessagingTimeout(systemWide, 0.25)
+
+        var focusedRef: CFTypeRef?
+        let focusErr = AXUIElementCopyAttributeValue(
+            systemWide, kAXFocusedUIElementAttribute as CFString, &focusedRef)
+        guard focusErr == .success, let focused = focusedRef else { return nil }
+        let element = focused as! AXUIElement
+        AXUIElementSetMessagingTimeout(element, 0.25)
+
+        // Skip secure text fields — never reveal a password selection.
+        var subroleRef: CFTypeRef?
+        if AXUIElementCopyAttributeValue(
+            element, kAXSubroleAttribute as CFString, &subroleRef) == .success,
+           let subrole = subroleRef as? String,
+           subrole == (kAXSecureTextFieldSubrole as String) {
+            return nil
+        }
+
+        // Need both the selected range (for bounds lookup) and the selected text.
+        var rangeRef: CFTypeRef?
+        guard AXUIElementCopyAttributeValue(
+            element, kAXSelectedTextRangeAttribute as CFString, &rangeRef) == .success,
+              let rangeValue = rangeRef else { return nil }
+
+        var lengthRange = CFRange(location: 0, length: 0)
+        AXValueGetValue(rangeValue as! AXValue, .cfRange, &lengthRange)
+        guard lengthRange.length > 0 else { return nil }
+
+        var stringRef: CFTypeRef?
+        let stringStatus = AXUIElementCopyParameterizedAttributeValue(
+            element,
+            kAXStringForRangeParameterizedAttribute as CFString,
+            rangeValue,
+            &stringRef)
+        guard stringStatus == .success,
+              let text = stringRef as? String,
+              !text.isEmpty else { return nil }
+
+        var boundsRef: CFTypeRef?
+        guard AXUIElementCopyParameterizedAttributeValue(
+            element,
+            kAXBoundsForRangeParameterizedAttribute as CFString,
+            rangeValue,
+            &boundsRef) == .success,
+              let boundsValue = boundsRef else { return nil }
+
+        var rect = CGRect.zero
+        guard AXValueGetValue(boundsValue as! AXValue, .cgRect, &rect),
+              rect.size.width > 0, rect.size.height > 0 else { return nil }
+
+        // AX returns top-left-origin coordinates. Convert to AppKit's bottom-
+        // left-origin so the rect can be passed directly to NSWindow.setFrame.
+        if let primaryScreen = NSScreen.screens.first {
+            let screenHeight = primaryScreen.frame.maxY
+            rect.origin.y = screenHeight - rect.origin.y - rect.size.height
+        }
+
+        return (text, rect)
+    }
+
     private func selectedTextAttribute(of element: AXUIElement) -> String? {
         var ref: CFTypeRef?
         guard AXUIElementCopyAttributeValue(
@@ -232,7 +301,12 @@ final class AccessibilityService {
     /// Brings the app that owned the original selection back to the front.
     /// Call this whenever the popover is dismissed so the user's editor regains
     /// focus instead of leaving them in a "what just took my focus?" state.
+    ///
+    /// Self-clearing: drops `sourceApp` after use so a stale reference can
+    /// never yank focus on a later code path (e.g. the workspace
+    /// did-activate observer firing for a normal app-switch).
     func reactivateSourceApp() {
+        defer { sourceApp = nil }
         if let sourceApp, !sourceApp.isActive {
             sourceApp.activate()
         }
