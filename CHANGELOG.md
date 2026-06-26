@@ -1,3 +1,21 @@
+# Modo 1.2
+
+## What's new
+
+**Redesigned popover**
+- New editable text input at the top — tweak the captured selection (or type a free-form Ask AI prompt) before running a mode.
+- Three primary tiles (Improve / Fix Grammar / Rephrase) with the focused mode highlighted; secondary modes appear in a list with ⌘1–⌘9 shortcut chips.
+- Arrow-key navigation through tiles + list. Return runs the focused mode, defaulting to **Improve** if nothing is focused.
+- Subtle Liquid-Glass material background, spring animation when focus moves, keyboard-hints footer.
+
+**Auto-update reliability**
+- Sparkle now fetches the appcast from `https://github.com/varun-apps/Modo/releases/latest/download/appcast.xml` — GitHub's permanent "latest release" redirect. No dependency on a separately-hosted feed; new releases are picked up the moment they're tagged.
+
+**Internal improvements**
+- Capture pipeline scaffolding (`CaptureSupport`, `CapabilityCache`), per-app policy hook (`AppPolicy`), engine resilience layer (`EngineResilience`), observability hooks (`Observability`), single-instance guard (`SingleInstanceGuard`), and a scaffold for per-app settings (`PerAppSettingsView`). These set the stage for future per-app behavior controls; no user-visible change in v1.2.
+
+---
+
 # Modo 1.1
 
 ## What's new
