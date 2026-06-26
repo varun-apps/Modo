@@ -57,7 +57,7 @@
 	<key>SUEnableAutomaticChecks</key>
 	<true/>
 	<key>SUFeedURL</key>
-	<string>https://varun-apps.github.io/Modo/appcast.xml</string>
+	<string>https://github.com/varun-apps/Modo/releases/latest/download/appcast.xml</string>
 	<key>SUPublicEDKey</key>
 	<string>z0gceljy/IiTy7uHEKCQ9wU8gKrYqRLJU3dlrmdpVrE=</string>
 	<key>SUScheduledCheckInterval</key>
