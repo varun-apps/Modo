@@ -68,6 +68,21 @@ enum AIProvider: String, CaseIterable, Identifiable {
         }
     }
 
+    /// Whether the selection never leaves the Mac when using this provider.
+    /// Ollama is always local; a Custom provider counts as local only when its
+    /// endpoint points at localhost. Used by the "local-only" network mode.
+    var isLocal: Bool {
+        switch self {
+        case .ollama:
+            return true
+        case .custom:
+            let host = URL(string: currentEndpointString)?.host?.lowercased() ?? ""
+            return host == "localhost" || host == "127.0.0.1" || host == "::1" || host.hasSuffix(".local")
+        default:
+            return false
+        }
+    }
+
     /// Whether the user types the model name as free text (true) or picks from
     /// a fixed list (false).
     var usesCustomModelName: Bool {

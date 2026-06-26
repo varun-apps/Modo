@@ -12,11 +12,12 @@ Signed & notarized · macOS 13+ · Apple silicon and Intel
 
 ## Highlights
 
+- **Five ways to launch**: floating **selection bubble** next to highlighted text, **"Improve with Modo"** in any app's right-click → Services menu, **global hotkey** (default ⌥Space), **per-mode hotkeys**, or the menu-bar **M**.
 - **Six built-in modes** + **Ask AI** for free-form instructions: Improve, Fix Grammar, Make Formal, Make Casual, Make Concise, Rephrase, Ask AI.
 - **Custom modes** — define your own ("Translate to German", "Reply politely declining", "Convert to bullet list") with their own icons, prompts, and output language.
 - **Six providers** — Groq, OpenAI, Anthropic, Google Gemini, **Ollama** (local, fully offline), or any **OpenAI-compatible** endpoint.
 - **Per-mode model routing** — send Fix Grammar to a cheap fast model, Improve to a strong one. Save tokens.
-- **Global hotkey** (default ⌥Space) and **per-mode hotkeys** so any rewrite is one keystroke away.
+- **Editable input** in the popover so you can tweak the captured text before running a mode.
 - **Tone detection**, **inline word diff**, **personal instructions** that apply to every mode, adjustable **creativity & length**.
 - **History** of recent rewrites (searchable), **Undo Replace** for 30 s, **Save as Custom Mode** to reuse a mode you tweaked.
 - **In-app Help** window, **first-run onboarding** wizard, **Open at Login**, **Settings export/import**.
@@ -64,18 +65,23 @@ Modo needs **Accessibility** to read the text you select and to write the improv
 
 ## How to use
 
-### Three ways to launch
+### Five ways to launch
 
-- **Menu-bar click** — click the **M** in the menu bar.
-- **Global hotkey** — press your configured hotkey (default **⌥ Space**) from any app.
+- **Selection bubble** *(recommended)* — select text in any AX-aware app and a small **Modo** bubble appears next to your selection. Click it to open the popover with that text pre-loaded. Enable in **Preferences → Selection Bubble**.
+- **Right-click → Services → Improve with Modo** — works in **every** app, including Notes, Mail, Slack, and other apps that don't expose Accessibility text APIs. Assign a system shortcut in **System Settings → Keyboard → Keyboard Shortcuts → Services**.
+- **Global hotkey** — press your configured hotkey (default **⌥ Space**) from any app to open the popover with the current selection.
 - **Per-mode hotkey** — bind, e.g., `⌃⌘G` to Fix Grammar in **Preferences → Configure Per-Mode Hotkeys**, and it skips the menu and runs directly.
+- **Menu-bar M** — click the **M** for the utility menu: Open Modo, Preferences, History, Help, Check for Updates, Quit. Use **Open Modo** to launch the popover when no text is selected.
 
 ### Inside the popover
 
-- **⌘1 – ⌘9** — run the first nine modes directly.
-- **Return** — repeat the last-used mode (it's highlighted).
+The popover has an **editable text field** at the top (the captured selection, or type freely for Ask AI), three **primary tiles** (Improve / Fix Grammar / Rephrase), and a **list of remaining modes** with ⌘N shortcuts.
+
+- **↑ / ↓** — move focus between tiles and list rows.
+- **Return** — run the focused mode. If nothing is focused, defaults to **Improve**.
+- **⌘1 – ⌘9** — run the first nine secondary modes directly.
 - **Escape** — close the popover.
-- **Drag text** from any app onto the popover to use it as the input.
+- **Drag text** from any app onto the popover to override the captured selection.
 
 ### Result actions
 
@@ -89,6 +95,10 @@ Modo needs **Accessibility** to read the text you select and to write the improv
 ---
 
 ## Power-user features
+
+**Selection bubble** — Preferences → Selection Bubble. Watches text selections in AX-aware apps and shows a clickable Modo bubble right next to them. Off by default; opt-in when you want it.
+
+**Services menu** — once Modo is in `/Applications` and launched, "Improve with Modo" appears in every Mac app's right-click → Services menu. Bind a system shortcut to it from System Settings → Keyboard → Keyboard Shortcuts → Services.
 
 **Custom modes** — Preferences → Custom Modes → Manage. Set name, icon, prompt, output language, and whether the selection is a direct instruction (like Ask AI) or content to edit.
 
@@ -118,11 +128,12 @@ Modo needs **Accessibility** to read the text you select and to write the improv
 |---|---|
 | **⌥ Space** | Open Modo (configurable) |
 | **Esc** | Close the popover |
-| **Return** | Repeat the last-used mode |
-| **⌘ 1 – ⌘ 9** | Run mode 1 through 9 in the grid |
-| **⌘ ,** | Open Preferences (from context menu) |
-| **⌘ H** | Open History (from context menu) |
-| **⌘ Q** | Quit Modo (from context menu) |
+| **↑ / ↓** | Navigate primary tiles and the secondary mode list |
+| **Return** | Run the focused mode (defaults to Improve if nothing focused) |
+| **⌘ 1 – ⌘ 9** | Run the first nine secondary modes directly |
+| **⌘ ,** | Open Preferences (from menu-bar menu) |
+| **⌘ H** | Open History (from menu-bar menu) |
+| **⌘ Q** | Quit Modo (from menu-bar menu) |
 | Per-mode bindings | Whatever you configure in Preferences |
 
 ---

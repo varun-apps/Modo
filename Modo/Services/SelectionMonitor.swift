@@ -69,6 +69,13 @@ final class SelectionMonitor {
         if let bundleID = frontApp.bundleIdentifier, suppressed.contains(bundleID) {
             return nil
         }
+        // Respect the user's per-app disable list and skip VM/remote windows.
+        if !AppPolicy.shared.isEnabled(forBundleID: frontApp.bundleIdentifier) {
+            return nil
+        }
+        if UnsupportedApps.isVMOrRemote(frontApp.bundleIdentifier) {
+            return nil
+        }
         guard let probe = AccessibilityService.peekSelectionWithBounds() else {
             return nil
         }

@@ -18,6 +18,14 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     private let overlayController = SelectionOverlayController()
 
     func applicationDidFinishLaunching(_ notification: Notification) {
+        // Single instance: the global hotkey and selection monitor must have
+        // exactly one owner. If another copy is already running, surface it and
+        // quit this one before touching any shared state.
+        if SingleInstanceGuard.anotherInstanceIsRunning() {
+            NSApp.terminate(nil)
+            return
+        }
+
         // Accessory app: no Dock icon, no main menu. (Also enforced by
         // LSUIElement in Info.plist, but we set it here for safety.)
         NSApp.setActivationPolicy(.accessory)

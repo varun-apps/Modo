@@ -38,6 +38,9 @@ final class HistoryStore: ObservableObject {
     }
 
     func add(_ entry: HistoryEntry) {
+        // Privacy: honor the user's "save history" preference. When off, no
+        // selection text is written to disk at all.
+        guard AppPolicy.shared.saveHistory else { return }
         var updated = entries
         updated.insert(entry, at: 0)
         if updated.count > maxEntries {
