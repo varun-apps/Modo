@@ -104,20 +104,30 @@ final class WindowViewModel: ObservableObject {
     }
 
     init() {
-        // Poll every second while the permission is not yet granted so the UI
-        // updates automatically when the user returns from System Settings.
+        startPermissionPolling()
+    }
+
+    /// Poll every second while permission is not yet granted so the UI updates
+    /// automatically when the user returns from System Settings. Also detects
+    /// runtime revocation and re-prompts.
+    private func startPermissionPolling() {
+        permissionTimer?.invalidate()
         permissionTimer = Timer.scheduledTimer(withTimeInterval: 1.0, repeats: true) { [weak self] _ in
             Task { @MainActor [weak self] in
                 guard let self else { return }
                 let trusted = AXIsProcessTrusted()
                 if self.hasAccessibilityPermission != trusted {
+                    // Detect revocation at runtime: if permission was just
+                    // taken away, re-prompt so the user can restore it without
+                    // relaunching.
+                    if self.hasAccessibilityPermission && !trusted {
+                        AccessibilityService.shared.promptForPermissionIfNeeded()
+                    }
                     self.hasAccessibilityPermission = trusted
                 }
-                // Stop polling once permission is granted.
-                if trusted {
-                    self.permissionTimer?.invalidate()
-                    self.permissionTimer = nil
-                }
+                // Note: the timer is intentionally left running even after
+                // permission is granted (the check is cheap) so a later
+                // revocation is detected and re-prompted at runtime.
             }
         }
     }
@@ -132,12 +142,18 @@ final class WindowViewModel: ObservableObject {
         resultText = ""
         errorMessage = nil
         replaceNotice = nil
+        captureNotice = nil
         activeMode = nil
         selectedText = text
         if Self.isToneDetectionEnabled {
             detectTone()
         }
     }
+
+    /// A non-blocking notice shown on the mode-selection screen (e.g. "can't
+    /// read secure fields"). Distinct from `errorMessage`, which lives on the
+    /// result screen.
+    @Published var captureNotice: String?
 
     /// Called each time the window opens: re-read the current selection.
     func refreshSelection() {
@@ -148,9 +164,29 @@ final class WindowViewModel: ObservableObject {
         resultText = ""
         errorMessage = nil
         replaceNotice = nil
+        captureNotice = nil
         activeMode = nil
         reloadCustomModes()
-        selectedText = AccessibilityService.shared.readSelectedText() ?? ""
+
+        switch AccessibilityService.shared.captureSelection() {
+        case .text(let text, _):
+            selectedText = text
+        case .empty:
+            selectedText = ""
+        case .secureField:
+            selectedText = ""
+            captureNotice = "Modo can't read secure fields like passwords."
+        case .unsupportedApp:
+            selectedText = ""
+            captureNotice = "Text isn't accessible in virtual machines or remote-desktop windows."
+        case .nonText:
+            selectedText = ""
+            captureNotice = "That selection isn't text — nothing to rewrite."
+        case .disabledForApp:
+            selectedText = ""
+            captureNotice = "Modo is turned off for this app. Re-enable it in Preferences → Per-App."
+        }
+
         if Self.isToneDetectionEnabled {
             detectTone()
         }
@@ -224,6 +260,14 @@ final class WindowViewModel: ObservableObject {
             return
         }
 
+        // Network mode: in local-only mode, refuse cloud providers so the
+        // selection never leaves the Mac.
+        if AppPolicy.shared.networkMode == .localOnly, !AIProvider.current.isLocal {
+            screen = .result
+            errorMessage = "Local-only mode is on. Switch to Ollama or a localhost endpoint in Preferences, or turn off local-only mode."
+            return
+        }
+
         activeMode = mode
         lastUsedModeID = mode.id
         UserDefaults.standard.set(mode.id, forKey: Self.lastUsedModeKey)
@@ -233,39 +277,109 @@ final class WindowViewModel: ObservableObject {
         replaceNotice = nil
         isStreaming = true
 
-        let textToImprove = selectedText
+        // Normalize line endings and enforce the input-length ceiling before
+        // sending. Surface a notice if we had to truncate.
+        let normalized = TextSanitizer.normalize(selectedText)
+        let (textToImprove, truncated) = TextSanitizer.enforceLimit(normalized)
+        if truncated {
+            replaceNotice = "Selection was long — only the first \(TextSanitizer.maxInputCharacters) characters were sent."
+        }
+        guard !textToImprove.isEmpty else {
+            isStreaming = false
+            screen = .modeSelection
+            captureNotice = "Nothing to rewrite."
+            return
+        }
+
+        let bundleID = AccessibilityService.shared.sourceBundleID
         let (service, modelOverride) = Self.resolveService(forModeID: mode.id,
                                                            oneShotModelOverride: oneShotModelOverride)
         streamTask = Task { [weak self] in
             guard let self else { return }
+
+            // Circuit breaker: if the provider has been failing repeatedly,
+            // don't fire another doomed request — tell the user to wait.
+            if case let .blocked(retryAfter) = await CircuitBreaker.shared.check() {
+                self.errorMessage = "Too many failed attempts. Try again in about \(Int(retryAfter.rounded())) seconds."
+                self.isStreaming = false
+                return
+            }
+
+            let started = Date()
             var completedSuccessfully = false
+            let maxAttempts = 3
+            var lastError: Error?
 
-            // Watchdog: if no delta arrives within the timeout, treat the
-            // request as hung and surface a clear error rather than spinning
-            // forever. Reset on each delta so long-but-progressing replies
-            // are not killed mid-stream.
-            let watchdog = StreamWatchdog(timeoutSeconds: 45) { [weak self] in
-                Task { @MainActor [weak self] in self?.streamTask?.cancel() }
-            }
-            await watchdog.start()
+            attempts: for attempt in 0..<maxAttempts {
+                // Reset the visible result for this attempt.
+                if attempt > 0 { self.resultText = "" }
 
-            do {
-                try await service.streamImprovement(
-                    text: textToImprove, mode: mode, modelOverride: modelOverride
-                ) { delta in
-                    Task { await watchdog.tick() }
-                    self.resultText += delta
+                // Watchdog: if no delta arrives within the timeout, treat the
+                // request as hung and surface a clear error rather than
+                // spinning forever. Reset on each delta so long-but-progressing
+                // replies are not killed mid-stream.
+                let watchdog = StreamWatchdog(timeoutSeconds: 45) { [weak self] in
+                    Task { @MainActor [weak self] in self?.streamTask?.cancel() }
                 }
-                completedSuccessfully = true
-            } catch {
-                if !Task.isCancelled {
-                    self.errorMessage = (error as? LocalizedError)?.errorDescription
-                        ?? error.localizedDescription
-                } else if await watchdog.firedTimeout {
-                    self.errorMessage = "The provider stopped responding. Check your connection or try a different model."
+                await watchdog.start()
+
+                do {
+                    try await service.streamImprovement(
+                        text: textToImprove, mode: mode, modelOverride: modelOverride
+                    ) { delta in
+                        Task { await watchdog.tick() }
+                        self.resultText += delta
+                    }
+                    completedSuccessfully = true
+                    await watchdog.cancel()
+                    break attempts
+                } catch {
+                    await watchdog.cancel()
+                    if Task.isCancelled {
+                        if await watchdog.firedTimeout {
+                            lastError = APIError.network("timeout")
+                        }
+                        break attempts
+                    }
+                    lastError = error
+                    // Auto-retry only transient infrastructure failures, with
+                    // exponential backoff. Permanent errors (bad key, etc.)
+                    // surface immediately.
+                    if RetryPolicy.isTransient(error), attempt < maxAttempts - 1 {
+                        try? await Task.sleep(nanoseconds: RetryPolicy.backoffNanoseconds(attempt: attempt))
+                        if Task.isCancelled { break attempts }
+                        continue attempts
+                    }
+                    break attempts
                 }
             }
-            await watchdog.cancel()
+
+            // Record outcome with the breaker and observability.
+            let ms = Int(Date().timeIntervalSince(started) * 1000)
+            // A watchdog timeout cancels this task, so distinguish it from a
+            // user dismissal: `lastError` carries our timeout sentinel.
+            var timedOut = false
+            if case APIError.network("timeout")? = lastError { timedOut = true }
+
+            if completedSuccessfully {
+                await CircuitBreaker.shared.recordSuccess()
+                Observability.shared.logEngine(success: true, bundleID: bundleID, latencyMS: ms)
+            } else if timedOut {
+                await CircuitBreaker.shared.recordFailure()
+                Observability.shared.logEngine(success: false, bundleID: bundleID, latencyMS: ms)
+                self.errorMessage = "The provider stopped responding. Check your connection or try a different model."
+            } else if Task.isCancelled {
+                // User dismissed the panel mid-stream — neither success nor a
+                // provider failure, so don't trip the breaker or show an error.
+            } else {
+                await CircuitBreaker.shared.recordFailure()
+                Observability.shared.logEngine(success: false, bundleID: bundleID, latencyMS: ms)
+                if let lastError {
+                    self.errorMessage = (lastError as? LocalizedError)?.errorDescription
+                        ?? lastError.localizedDescription
+                }
+            }
+
             self.isStreaming = false
             if completedSuccessfully && !self.resultText.isEmpty {
                 HistoryStore.shared.add(HistoryEntry(
@@ -315,14 +429,20 @@ final class WindowViewModel: ObservableObject {
         let originalSelection = selectedText
         let outcome = AccessibilityService.shared.replaceSelectedText(with: resultText)
         switch outcome {
-        case .replacedInPlace:
+        case .replacedInPlace, .pastedViaClipboard:
             lastReplacedOriginal = originalSelection
             armUndoTimer()
             return true
-        case .pastedViaClipboard:
-            lastReplacedOriginal = originalSelection
-            armUndoTimer()
-            return true
+        case .pastedUnverified:
+            // Couldn't reliably deliver the paste — result is on the clipboard.
+            replaceNotice = "Couldn't switch back to the app — the result is on your clipboard (press ⌘V to paste)."
+            return false
+        case .readOnly:
+            replaceNotice = "This field is read-only — result copied to your clipboard."
+            return false
+        case .focusChanged:
+            replaceNotice = "Focus moved to another field — result copied to your clipboard instead of overwriting it."
+            return false
         case .accessibilityRevoked:
             copyResult()
             replaceNotice = "Accessibility permission is off — result copied to clipboard. Re-enable Modo in System Settings → Privacy & Security → Accessibility."
@@ -332,6 +452,14 @@ final class WindowViewModel: ObservableObject {
             replaceNotice = "Couldn't replace — text copied to clipboard instead."
             return false
         }
+    }
+
+    /// Clears selection/result text from memory once a session ends, so the
+    /// captured content doesn't linger in the view model longer than needed.
+    func scrubSession() {
+        selectedText = ""
+        resultText = ""
+        detectedTone = nil
     }
 
     // MARK: - Undo Replace

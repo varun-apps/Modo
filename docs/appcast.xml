@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Modo appcast — Sparkle update feed served from GitHub Pages
+  at https://varun-apps.github.io/Modo/appcast.xml.
+
+  This file is the canonical feed for Modo v1.1 (and earlier) installs that
+  have SUFeedURL pointing at the Pages URL. Each release, replace the
+  newest <item> with the snippet printed by Distribution/release.sh and
+  push to main so Pages redeploys.
+-->
+<rss version="2.0" xmlns:sparkle="http://www.andymatuschak.org/xml-namespaces/sparkle">
+  <channel>
+    <title>Modo</title>
+    <link>https://github.com/varun-apps/Modo</link>
+    <description>Latest Modo releases</description>
+    <language>en</language>
+
+    <item>
+      <title>Version 1.1</title>
+      <sparkle:version>1.1</sparkle:version>
+      <sparkle:shortVersionString>1.1</sparkle:shortVersionString>
+      <sparkle:minimumSystemVersion>13.0</sparkle:minimumSystemVersion>
+      <pubDate>Fri, 19 Jun 2026 23:21:55 +0000</pubDate>
+      <description><![CDATA[
+        <ul>
+          <li>Floating Modo bubble next to selected text (opt-in)</li>
+          <li>"Improve with Modo" in any app's Services menu</li>
+          <li>Per-mode model routing, tone detection, inline diff</li>
+          <li>In-app Help window, onboarding wizard, Open at Login</li>
+          <li>Fixes: focus stealing, modifier latching, popover teardown</li>
+        </ul>
+      ]]></description>
+      <enclosure
+        url="https://github.com/varun-apps/Modo/releases/download/v1.1/Modo-1.1.zip"
+        sparkle:edSignature="RqGTuPmZ2rqEdxT78nbbCXAVEn4i+n9kjDAixFEnvleg9/0RoJ0C2H2NgazJCxc+lqcb/NgJF6rk/oGTxcu1Dg=="
+        length="1995489"
+        type="application/octet-stream" />
+    </item>
+
+  </channel>
+</rss>

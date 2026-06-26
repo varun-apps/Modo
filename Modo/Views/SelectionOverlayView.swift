@@ -26,5 +26,7 @@ struct SelectionOverlayView: View {
         }
         .buttonStyle(.plain)
         .onHover { isHovered = $0 }
+        .accessibilityLabel("Improve with Modo")
+        .accessibilityHint("Opens Modo to rewrite the selected text.")
     }
 }

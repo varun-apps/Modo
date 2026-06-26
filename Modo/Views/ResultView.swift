@@ -177,6 +177,8 @@ struct ResultView: View {
         .frame(maxWidth: .infinity, alignment: .leading)
         .background(Color.red.opacity(0.1))
         .clipShape(RoundedRectangle(cornerRadius: 8))
+        .accessibilityElement(children: .combine)
+        .accessibilityLabel("Error: \(message)")
     }
 
     private var actionRow: some View {
@@ -202,6 +204,8 @@ struct ResultView: View {
                 }
                 .buttonStyle(.bordered)
                 .disabled(viewModel.isStreaming || viewModel.resultText.isEmpty)
+                .accessibilityLabel("Copy result")
+                .accessibilityHint("Copies the improved text to the clipboard.")
 
                 Button {
                     if viewModel.replaceResult() { onClose() }
@@ -211,6 +215,8 @@ struct ResultView: View {
                 }
                 .buttonStyle(.borderedProminent)
                 .disabled(viewModel.isStreaming || viewModel.resultText.isEmpty)
+                .accessibilityLabel("Replace selection")
+                .accessibilityHint("Writes the improved text back over your original selection.")
             }
         }
     }

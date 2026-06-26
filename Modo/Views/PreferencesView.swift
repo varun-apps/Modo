@@ -21,6 +21,10 @@ struct PreferencesView: View {
     @State private var endpoints: [String: String] = [:]
     @State private var temperature: Double = GenerationSettings.temperature
     @State private var length: GenerationSettings.Length = GenerationSettings.length
+    @State private var saveHistory: Bool = AppPolicy.shared.saveHistory
+    @State private var localOnly: Bool = AppPolicy.shared.networkMode == .localOnly
+    @State private var showingPerApp = false
+    @State private var resetCacheFlash = false
 
     var body: some View {
         Form {
@@ -228,6 +232,61 @@ struct PreferencesView: View {
             }
 
             Section {
+                Toggle("Restrict to on-device providers (local-only)", isOn: $localOnly)
+                    .onChange(of: localOnly) { _, newValue in
+                        AppPolicy.shared.networkMode = newValue ? .localOnly : .normal
+                    }
+                Text("When on, Modo only rewrites with local providers (Ollama or a localhost endpoint) so your selected text never leaves your Mac. Cloud providers are blocked until you turn this off.")
+                    .font(.footnote)
+                    .foregroundStyle(.secondary)
+                Toggle("Save rewrite history on this Mac", isOn: $saveHistory)
+                    .onChange(of: saveHistory) { _, newValue in
+                        AppPolicy.shared.saveHistory = newValue
+                        if !newValue { HistoryStore.shared.clear() }
+                    }
+                Text("History is stored locally in plain form (last 20 rewrites). Turn this off to keep no record of your selections or results; existing history is cleared immediately.")
+                    .font(.footnote)
+                    .foregroundStyle(.secondary)
+            } header: {
+                Text("Privacy")
+            }
+
+            Section {
+                HStack {
+                    Text("Modo runs everywhere except apps you exclude")
+                        .foregroundStyle(.secondary)
+                    Spacer()
+                    Button("Manage Excluded Apps…") { showingPerApp = true }
+                }
+                Text("Turn Modo off in specific apps (e.g. password managers, banking apps). Excluded apps won't show the bubble or read selections.")
+                    .font(.footnote)
+                    .foregroundStyle(.secondary)
+            } header: {
+                Text("Per-App")
+            }
+
+            Section {
+                HStack {
+                    Button("Reset Learned App Behavior") {
+                        CapabilityCache.shared.reset()
+                        resetCacheFlash = true
+                        DispatchQueue.main.asyncAfter(deadline: .now() + 1.5) { resetCacheFlash = false }
+                    }
+                    if resetCacheFlash {
+                        Label("Reset", systemImage: "checkmark.circle.fill")
+                            .foregroundStyle(.green)
+                            .font(.footnote)
+                    }
+                    Spacer()
+                }
+                Text("Modo remembers which method (Accessibility vs. copy/paste) works in each app. If an app started behaving differently, reset this to re-probe it from scratch.")
+                    .font(.footnote)
+                    .foregroundStyle(.secondary)
+            } header: {
+                Text("Troubleshooting")
+            }
+
+            Section {
                 HStack {
                     Button("Export Settings…") { SettingsExporter.runExport() }
                     Button("Import Settings…") {
@@ -276,6 +335,9 @@ struct PreferencesView: View {
         }
         .sheet(isPresented: $showingModeRouting) {
             ModeRoutingView()
+        }
+        .sheet(isPresented: $showingPerApp) {
+            PerAppSettingsView()
         }
     }
 

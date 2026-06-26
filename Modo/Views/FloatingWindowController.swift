@@ -126,6 +126,9 @@ final class FloatingWindowController: NSObject, NSPopoverDelegate {
         // Return focus to whatever app the user was working in. Without this,
         // dismissing the popover can leave the user in a no-app-focused state.
         AccessibilityService.shared.reactivateSourceApp()
+        // Privacy: drop the captured selection/result from memory now the
+        // session is over (the undo buffer is managed separately).
+        viewModel.scrubSession()
     }
 
     // MARK: - Keyboard
@@ -164,5 +167,6 @@ final class FloatingWindowController: NSObject, NSPopoverDelegate {
         }
         popover = nil
         AccessibilityService.shared.reactivateSourceApp()
+        viewModel.scrubSession()
     }
 }

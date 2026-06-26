@@ -17,6 +17,7 @@ struct OnboardingView: View {
     @State private var apiKey: String = ""
     @State private var hasAccessibility: Bool = AXIsProcessTrusted()
     @State private var pollTimer: Timer?
+    @State private var sampleText: String = "the team have made good progress on there goals this quarter"
 
     private let totalSteps = 4
 
@@ -137,6 +138,19 @@ struct OnboardingView: View {
             Text("Find Modo in the list and turn its switch on. This window updates automatically.")
                 .font(.footnote)
                 .foregroundStyle(.secondary)
+
+            if hasAccessibility {
+                Divider().padding(.vertical, 4)
+                Text("Test it now")
+                    .font(.callout.weight(.medium))
+                Text("Select the sentence below, then press your hotkey (⌥ Space) to open Modo on it.")
+                    .font(.footnote)
+                    .foregroundStyle(.secondary)
+                TextField("", text: $sampleText, axis: .vertical)
+                    .textFieldStyle(.roundedBorder)
+                    .lineLimit(2, reservesSpace: true)
+                    .font(.callout)
+            }
             Spacer()
         }
     }
