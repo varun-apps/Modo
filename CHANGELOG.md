@@ -1,3 +1,12 @@
+# Modo 1.3
+
+- Removed the Selection Bubble feature.
+- Removed Settings Export/Import (Backup section in Preferences).
+- Menu-bar tooltip now shows the current global hotkey live — no relaunch needed when you change it.
+- Replaced Groq's deprecated Llama 3.1 8B Instant model with **GPT OSS 20B**.
+
+---
+
 # Modo 1.2
 
 ## What's new
