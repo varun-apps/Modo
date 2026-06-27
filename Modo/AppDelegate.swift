@@ -12,10 +12,10 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     private var streamingPulseTimer: Timer?
     private var streamingObserver: NSObjectProtocol?
     private var helpObserver: NSObjectProtocol?
+    private var hotkeyObserver: NSObjectProtocol?
     // Hold a strong reference so Sparkle's background scheduler keeps running
     // for the life of the app.
     private let updaterService = UpdaterService.shared
-    private let overlayController = SelectionOverlayController()
 
     func applicationDidFinishLaunching(_ notification: Notification) {
         // Single instance: the global hotkey and selection monitor must have
@@ -33,7 +33,6 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         setupStatusItem()
         setupGlobalHotkey()
         setupHelpListener()
-        setupSelectionOverlay()
         setupServicesProvider()
 
         // On first launch, show the in-app onboarding flow which walks the
@@ -72,29 +71,10 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     }
 
     /// Opens the popover and pre-loads it with `text`, bypassing the AX
-    /// read entirely. Used by the Services menu and the selection overlay.
+    /// read entirely. Used by the Services menu.
     func showFloatingWindow(withText text: String) {
         guard let button = statusItem?.button else { return }
         windowController.show(withText: text, relativeTo: button)
-    }
-
-    private func setupSelectionOverlay() {
-        overlayController.onActivate = { [weak self] in
-            self?.toggleFloatingWindow()
-        }
-        if SelectionOverlayController.isEnabled {
-            overlayController.start()
-        }
-    }
-
-    /// Public entry point used by Preferences when the toggle changes.
-    func setSelectionOverlayEnabled(_ enabled: Bool) {
-        SelectionOverlayController.setEnabled(enabled)
-        if enabled {
-            overlayController.start()
-        } else {
-            overlayController.stop()
-        }
     }
 
     private func setupHelpListener() {
@@ -129,8 +109,18 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
             button.action = #selector(statusItemClicked(_:))
             // Receive both left and right mouse-up events.
             button.sendAction(on: [.leftMouseUp, .rightMouseUp])
-            // Native macOS tooltip — appears after a short hover.
-            button.toolTip = "Modo — click for Open Modo, Preferences, History, and Help. Select text in any app to see the Modo bubble next to it."
+            updateTooltip()
+        }
+
+        // Keep the tooltip in sync when the user changes the global hotkey in
+        // Preferences — otherwise it'd keep showing the old combo until the
+        // next launch.
+        hotkeyObserver = NotificationCenter.default.addObserver(
+            forName: HotkeyService.globalHotkeyDidChangeNotification,
+            object: nil,
+            queue: .main
+        ) { [weak self] _ in
+            Task { @MainActor [weak self] in self?.updateTooltip() }
         }
 
         // Pulse the menu-bar icon while a stream is in flight so users on
@@ -144,6 +134,21 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
             Task { @MainActor [weak self] in
                 self?.setStreamingPulse(streaming)
             }
+        }
+    }
+
+    /// Sets the menu-bar M tooltip to show the current global hotkey. Called
+    /// at launch and whenever the hotkey changes in Preferences.
+    private func updateTooltip() {
+        guard let button = statusItem?.button else { return }
+        if HotkeyService.shared.isEnabled {
+            let hotkey = HotkeyService.displayString(
+                keyCode: HotkeyService.shared.currentKeyCode,
+                modifiers: HotkeyService.shared.currentModifiers
+            )
+            button.toolTip = "Select the text and press \(hotkey) to improve it with Modo."
+        } else {
+            button.toolTip = "Click for Open Modo, Preferences, History, and Help. Enable a global hotkey in Preferences for one-keystroke access."
         }
     }
 
@@ -165,9 +170,9 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     }
 
     @objc private func statusItemClicked(_ sender: NSStatusBarButton) {
-        // Both left- and right-click now show the same menu. The popover
-        // itself is opened via the floating selection overlay, the global
-        // hotkey, per-mode hotkeys, or the "Open Modo" menu item.
+        // Both left- and right-click show the same utility menu. The popover
+        // itself is opened via the global hotkey, per-mode hotkeys, the
+        // "Open Modo" menu item, or the macOS Services menu.
         showContextMenu()
     }
 

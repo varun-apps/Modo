@@ -138,11 +138,8 @@ struct HelpContent: View {
 
     private var threeWays: some View {
         VStack(alignment: .leading, spacing: 12) {
-            H2("Selection bubble (recommended)")
-            Text("Select text in any AX-aware app and a small **Modo** bubble appears next to the selection. Click it to open the popover with your selection ready to rewrite. Enable in Preferences → Selection Bubble.")
-
-            H2("Global hotkey")
-            Text("Press your configured global hotkey from anywhere — Modo opens the popover with the current selection. Default is **⌥ Space**; change it in Preferences → Global Hotkey.")
+            H2("Global hotkey (recommended)")
+            Text("Select text in any app, then press your configured global hotkey to open Modo with that text pre-loaded. Default is **⌥ Space** — change it in Preferences → Global Hotkey. The current hotkey is also shown in the menu-bar icon's tooltip.")
 
             H2("Per-mode hotkeys")
             Text("Bind a key combination to a specific mode in Preferences → Configure Per-Mode Hotkeys. Pressing it skips the menu and runs that mode directly on your selection.")
@@ -151,12 +148,13 @@ struct HelpContent: View {
             Text("In any app, right-click your selected text and pick **Services → Improve with Modo**. The popover opens pre-loaded with your selection — works even in apps that don't expose Accessibility text APIs (Notes, Mail, Slack, etc.). You can assign a system shortcut to this Service in **System Settings → Keyboard → Keyboard Shortcuts → Services**.")
 
             H2("Menu bar icon")
-            Text("Click the **M** in the menu bar to open the menu (Open Modo, Preferences, History, Help, Check for Updates, Quit). Choose **Open Modo** to launch the popover when no text is selected, or use the hotkey / bubble for fastest access.")
+            Text("Click the **M** in the menu bar to open the utility menu (Open Modo, Preferences, History, Help, Check for Updates, Quit). Choose **Open Modo** to launch the popover when no text is selected.")
 
             H2("Inside the popover")
-            Text("Once the popover is open, you can move even faster:")
-            Bullet { Text("**Return** — run the last-used mode.") }
-            Bullet { Text("**⌘ 1 – ⌘ 9** — run the first nine modes in the grid.") }
+            Text("Once the popover is open:")
+            Bullet { Text("**Return** — run the last-used mode (defaults to Improve when nothing is focused).") }
+            Bullet { Text("**↑ / ↓** — move focus between the primary tiles and the secondary mode list.") }
+            Bullet { Text("**⌘ 1 – ⌘ 9** — run the first nine secondary modes directly.") }
             Bullet { Text("**Escape** — close the popover.") }
             Bullet { Text("**Drag text** from any app onto the popover to use it as the input instead of the captured selection.") }
         }
@@ -248,7 +246,7 @@ struct HelpContent: View {
             Text("In Preferences → Model → **Per-Mode Routing…**, you can send each mode to a different (provider, model) than the global default. This is the cost-saving recipe Modo enables that Grammarly can't.")
 
             H2("A common setup")
-            Bullet { Text("**Fix Grammar → Groq + Llama 3.1 8B Instant** — cheap and instant for the most-used mode.") }
+            Bullet { Text("**Fix Grammar → Groq + GPT OSS 20B** — cheap and instant for the most-used mode.") }
             Bullet { Text("**Improve → Anthropic + Claude Sonnet 4.6** — strong for nuanced rewrites.") }
             Bullet { Text("**Ask AI → OpenAI + GPT-4o** — best general reasoning.") }
             Bullet { Text("**Make Concise → Ollama + llama3.2** — free and local for short tasks.") }

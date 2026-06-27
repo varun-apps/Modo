@@ -12,7 +12,7 @@ Signed & notarized · macOS 13+ · Apple silicon and Intel
 
 ## Highlights
 
-- **Five ways to launch**: floating **selection bubble** next to highlighted text, **"Improve with Modo"** in any app's right-click → Services menu, **global hotkey** (default ⌥Space), **per-mode hotkeys**, or the menu-bar **M**.
+- **Four ways to launch**: **global hotkey** (default ⌥Space), **per-mode hotkeys**, **"Improve with Modo"** in any app's right-click → Services menu, or the menu-bar **M**.
 - **Six built-in modes** + **Ask AI** for free-form instructions: Improve, Fix Grammar, Make Formal, Make Casual, Make Concise, Rephrase, Ask AI.
 - **Custom modes** — define your own ("Translate to German", "Reply politely declining", "Convert to bullet list") with their own icons, prompts, and output language.
 - **Six providers** — Groq, OpenAI, Anthropic, Google Gemini, **Ollama** (local, fully offline), or any **OpenAI-compatible** endpoint.
@@ -20,7 +20,7 @@ Signed & notarized · macOS 13+ · Apple silicon and Intel
 - **Editable input** in the popover so you can tweak the captured text before running a mode.
 - **Tone detection**, **inline word diff**, **personal instructions** that apply to every mode, adjustable **creativity & length**.
 - **History** of recent rewrites (searchable), **Undo Replace** for 30 s, **Save as Custom Mode** to reuse a mode you tweaked.
-- **In-app Help** window, **first-run onboarding** wizard, **Open at Login**, **Settings export/import**.
+- **In-app Help** window, **first-run onboarding** wizard, **Open at Login**.
 - **Sparkle 2** auto-updates from GitHub Releases. Signed, notarized, EdDSA-verified.
 - **Privacy by design** — no account, no telemetry. Your keys live in the Keychain. With Ollama, your text never leaves your Mac.
 
@@ -65,12 +65,11 @@ Modo needs **Accessibility** to read the text you select and to write the improv
 
 ## How to use
 
-### Five ways to launch
+### Four ways to launch
 
-- **Selection bubble** *(recommended)* — select text in any AX-aware app and a small **Modo** bubble appears next to your selection. Click it to open the popover with that text pre-loaded. Enable in **Preferences → Selection Bubble**.
+- **Global hotkey** *(recommended)* — select text in any app, then press your configured hotkey (default **⌥ Space**). Modo opens with that text pre-loaded. The current hotkey is also shown in the menu-bar M's tooltip so you don't have to remember it.
+- **Per-mode hotkey** — bind, e.g., `⌃⌘G` to Fix Grammar in **Preferences → Configure Per-Mode Hotkeys**, and it skips the menu and runs that mode directly on your selection.
 - **Right-click → Services → Improve with Modo** — works in **every** app, including Notes, Mail, Slack, and other apps that don't expose Accessibility text APIs. Assign a system shortcut in **System Settings → Keyboard → Keyboard Shortcuts → Services**.
-- **Global hotkey** — press your configured hotkey (default **⌥ Space**) from any app to open the popover with the current selection.
-- **Per-mode hotkey** — bind, e.g., `⌃⌘G` to Fix Grammar in **Preferences → Configure Per-Mode Hotkeys**, and it skips the menu and runs directly.
 - **Menu-bar M** — click the **M** for the utility menu: Open Modo, Preferences, History, Help, Check for Updates, Quit. Use **Open Modo** to launch the popover when no text is selected.
 
 ### Inside the popover
@@ -96,8 +95,6 @@ The popover has an **editable text field** at the top (the captured selection, o
 
 ## Power-user features
 
-**Selection bubble** — Preferences → Selection Bubble. Watches text selections in AX-aware apps and shows a clickable Modo bubble right next to them. Off by default; opt-in when you want it.
-
 **Services menu** — once Modo is in `/Applications` and launched, "Improve with Modo" appears in every Mac app's right-click → Services menu. Bind a system shortcut to it from System Settings → Keyboard → Keyboard Shortcuts → Services.
 
 **Custom modes** — Preferences → Custom Modes → Manage. Set name, icon, prompt, output language, and whether the selection is a direct instruction (like Ask AI) or content to edit.
@@ -113,8 +110,6 @@ The popover has an **editable text field** at the top (the captured selection, o
 **Ollama (fully local)** — install Ollama, run `ollama serve`, pull a model (`ollama pull llama3.2`). Your text never leaves your Mac and there's nothing to pay for after install.
 
 **History** — right-click the M → **History…**. Searchable list of the last 20 rewrites with one-click copy of original or result.
-
-**Settings export/import** — Preferences → Backup → Export. Saves your modes, hotkeys, routing, generation controls, and personal instructions as JSON. (API keys are deliberately excluded — they stay in the Keychain.)
 
 **Open at Login** — Preferences → Startup. Uses `SMAppService` (macOS 13+).
 

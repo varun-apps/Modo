@@ -43,6 +43,10 @@ final class HotkeyService {
     /// Posted whenever `register()` runs and the list of conflicts changes.
     static let conflictsDidChangeNotification = Notification.Name("Modo.HotkeyConflictsChanged")
 
+    /// Posted whenever the global hotkey settings change (key/modifiers/enabled).
+    /// Lets the menu-bar tooltip refresh live instead of waiting for next launch.
+    static let globalHotkeyDidChangeNotification = Notification.Name("Modo.GlobalHotkeyDidChange")
+
     private init() {}
 
     // MARK: - Global hotkey settings
@@ -223,11 +227,13 @@ final class HotkeyService {
         currentKeyCode = keyCode
         currentModifiers = modifiers
         register()
+        NotificationCenter.default.post(name: Self.globalHotkeyDidChangeNotification, object: nil)
     }
 
     func setEnabled(_ enabled: Bool) {
         isEnabled = enabled
         register()
+        NotificationCenter.default.post(name: Self.globalHotkeyDidChangeNotification, object: nil)
     }
 
     // MARK: - Display helpers

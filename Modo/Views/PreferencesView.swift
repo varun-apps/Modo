@@ -10,7 +10,6 @@ struct PreferencesView: View {
     @State private var hotkeyModifiers: UInt32 = HotkeyService.shared.currentModifiers
     @State private var globalHotkeyConflict: Bool = HotkeyService.shared.failedBindings["global"] != nil
     @State private var openAtLogin: Bool = LaunchAtLoginService.isEnabled
-    @State private var selectionOverlayEnabled: Bool = SelectionOverlayController.isEnabled
     @ObservedObject private var updater = UpdaterService.shared
     @State private var customModes: [Mode] = CustomModeStore.shared.load()
     @State private var showingCustomModes = false
@@ -158,21 +157,6 @@ struct PreferencesView: View {
             }
 
             Section {
-                Toggle("Show floating Modo bubble next to selected text",
-                       isOn: $selectionOverlayEnabled)
-                    .onChange(of: selectionOverlayEnabled) { _, newValue in
-                        if let delegate = NSApp.delegate as? AppDelegate {
-                            delegate.setSelectionOverlayEnabled(newValue)
-                        }
-                    }
-                Text("When on, Modo watches for text selections in other apps and shows a small bubble next to your selection. Click the bubble to open Modo. Works in apps that expose Accessibility text APIs (most native macOS apps).")
-                    .font(.footnote)
-                    .foregroundStyle(.secondary)
-            } header: {
-                Text("Selection Bubble")
-            }
-
-            Section {
                 Toggle("Enable global hotkey", isOn: $hotkeyEnabled)
                 HStack {
                     Text("Shortcut")
@@ -258,7 +242,7 @@ struct PreferencesView: View {
                     Spacer()
                     Button("Manage Excluded Apps…") { showingPerApp = true }
                 }
-                Text("Turn Modo off in specific apps (e.g. password managers, banking apps). Excluded apps won't show the bubble or read selections.")
+                Text("Turn Modo off in specific apps (e.g. password managers, banking apps). Excluded apps won't be readable by the global hotkey or Services menu.")
                     .font(.footnote)
                     .foregroundStyle(.secondary)
             } header: {
@@ -284,21 +268,6 @@ struct PreferencesView: View {
                     .foregroundStyle(.secondary)
             } header: {
                 Text("Troubleshooting")
-            }
-
-            Section {
-                HStack {
-                    Button("Export Settings…") { SettingsExporter.runExport() }
-                    Button("Import Settings…") {
-                        SettingsExporter.runImport { loadAll() }
-                    }
-                    Spacer()
-                }
-                Text("Exports your custom modes, hotkeys, generation controls, and per-mode routing as a JSON file. API keys are kept in the Keychain and not included.")
-                    .font(.footnote)
-                    .foregroundStyle(.secondary)
-            } header: {
-                Text("Backup")
             }
 
             Section {

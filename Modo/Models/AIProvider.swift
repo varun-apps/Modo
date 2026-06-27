@@ -105,7 +105,7 @@ enum AIProvider: String, CaseIterable, Identifiable {
         case .groq:
             return [
                 ProviderModel(id: "llama-3.3-70b-versatile",  displayName: "Llama 3.3 70B (recommended)"),
-                ProviderModel(id: "llama-3.1-8b-instant",     displayName: "Llama 3.1 8B (fastest)")
+                ProviderModel(id: "openai/gpt-oss-20b",        displayName: "GPT OSS 20B")
             ]
         case .openAI:
             return [
