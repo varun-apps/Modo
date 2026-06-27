@@ -78,7 +78,7 @@ Modo is a macOS menu-bar app that rewrites any text you select, anywhere on your
 
 ## Install
 
-1. Download **Modo-1.0.zip** below and unzip.
+1. Download **Modo-1.3.zip** below and unzip.
 2. Drag **Modo.app** to **Applications**.
 3. Launch — the **M** icon appears in your menu bar.
 4. The first-run Welcome wizard walks you through API key setup and Accessibility permission.
